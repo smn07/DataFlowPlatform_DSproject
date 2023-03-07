@@ -3,30 +3,36 @@
 using namespace omnetpp;
 
 class Coordinator: public cSimpleModule{
-    /*Has a view of all workers through an object, containing info about if the worker is working and what task it is working on. also has an array to know if the worker is online or not.
-    reads tasks and data, schedules tasks by selecting a non active worker and sending a message containing task and data. When there are no workers free waits for a completion message
-    recieves a completion message -> changes the workers object, saves result data, schedules another task on that worker.
-    after each task is dispatched set a timeout for a self message, if the message is recieved the corresponding worker is a struggler, thus it is considered failed and a stop execution message is setn to the worker, the task is put in a special queue. when a worker is free first take tasks from the queue only later from disk.
-    if a backOnline message is recieved the worker is marked as online and considered free, a new task is scheduled.
-    periodically the coordinator sends a ping to a worker and schedules a self message for the timeout, if no pong is recieved before the timeout the worker is considered failed, the array is updated and the task is put in the queue
+    /*
+    At Runtime:
+    Has a view of all workers through an object, containing info about if the worker is working and what task it is working on. Also has an array to know if the worker is online or not.
+    the coordinator first reads the data and partitions it according to the number of mappers, then puts the data for a worker in a global static array of objects representing the data. The coordinator will then send an executeMap to each mapper telling it to execute the map on the data at its index.
+    when a Mapcompetion message is recieved the info about that worker is updated, the coordinator will read a keys from the results of that mapper and send an executeReduce(key) to each nonworking reducer that may need to work a key. If needed a failed map is scheduled on that free mapper. 
+    when a RecudeCompletion message is recieved the info about that worker is updated.
+
+    Fail tolerance:
+    the coordinato periodically sends a ping to the workers and sets a pingTimeout selfmessage. if the timeout is recieved before the pong the worker is considered failed (info updated). if a mapper fails a stopExecution is sent to every reducer that was working on the keys in its current output, its task is put into a queue. if a reducer fails its reduce is put into a queue.
+    when a task is dispathed a strugglerTimeout is set, if it is recieved before the worker finisches it is considered failed and a stopExecution is sent.
+    when a back online message is recieved the info about the worker is updated and if possible a new task if scheduled.
 
     messages:
-        executeTask(task,data)
-        completion(workerId,result)
-        strugglerTimeout(workerId)
-        ping()
-        pingTimeout(workerId)
-        pong(workerId)
-        backOnline(workerId)
-        stopExecution()
+        executeMap();
+        executeReduce(key);
+        Mapcompletion(workerId);
+        ReduceCompletion(workerId);
+        ping();
+        pingTimeout(workerId);
+        pong(workerId);
+        strugglerTimeout(workerId);
+        backOnline(workerId);
+        stopExecution();
 
     dataStructures:
-        taskTracker: contains the id of the worker, the task exeuted on the data it is being executed on
-        workerOnline: boolean array to know if a worker is online
-        failedTaskQueue: queue of tasks and data
-        tasks: order of tasks to be executed, possibly read from disk
-        data: dataset, possibly read from disk
-
-    open problems: how to store task order, how to distinguish tasks, workers should write the result on disk instead of returning in the message, coordinator should read from disk.
+        GlobalData[] data;
+        workersData: contains id, type, task, working or failed;
+        failedMapQueue and failedReduceQueue;
+        MapTask: operations in a map
+        ReduceTask: operations in a reduce
+        data: dataset
     */
 }

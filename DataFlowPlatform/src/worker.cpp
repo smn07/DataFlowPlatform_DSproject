@@ -4,21 +4,31 @@ using namespace omnetpp;
 
 class Worker: public cSimpleModule{
     /*
-    getTask: recieves message, if it is a task then execute it. After execution set a timer for a self message to simulate execution time, after recieving the message send the result out.
-    randomly fail after recieving a task, set the failed flag to true, set a timer for a self messuge to get back online. when back online send a message to the coordinator.
-    if a ping is recieved send a pong in response.
-    if the execution takes too long a stopExecution is received, the executionTime message is destroied.
+    Workers are either mappers or reducers.
+    There is a static data structure shared across workers and coordinator.
+
+    Messages:
+    Execute Task: recieves from the coordinator the message to execute a task, the worker accesses the data in the global structure corresponding to its index and executes the task. The result is also saved to the global structure. After execution a timer is set for a executionTime selfmessage.
+    Execution Time: the task is finished and a completion message can be sent out to the coordinator.
+    If a ping is recieved it responds with a pong.
+    If a stopExecuting message is recieved stop the current task.
+
+    Failure model:
+    randomly fail after recieving an execute task message. Set the failed flag to true and set a timer for a Recovery self message.
+    after recieving the recovery send a backonline to coordinator
 
     messages:
-        executeTask(task,data);
-        completion(workerId,result);
-        backOnline(workerId);
+        executeTask();
         executionTime();
+        completion(workerId);
+        Ping();
+        Pong(workerId);
+        Recovery();
+        backOnline(workerId);
         stopExecution()
-        Ping()
-        Pong(workerId)
 
     data structures:
+        GlobalData[] data;
         id of the worker;
         bool to know if the worker has failed
 

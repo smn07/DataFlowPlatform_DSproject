@@ -4,35 +4,45 @@ using namespace omnetpp;
 
 class Coordinator: public cSimpleModule{
     /*
+    The coordinato has an array workersData, containing informations about the id, type, task executing (index of the array GlobalData containing a subset of the input data) and state of each worker.
+    Initially the Coordinator read and validates the JSON file with the map and the reduce and the input data. Then divides the input into tasks and populates the GlobalData, Map and Reduce structure.
+    
     At Runtime:
-    Has a view of all workers through an object, containing info about if the worker is working and what task it is working on. Also has an array to know if the worker is online or not.
-    the coordinator first reads the data and partitions it according to the number of mappers, then puts the data for a worker in a global static array of objects representing the data. The coordinator will then send an executeMap to each mapper telling it to execute the map on the data at its index.
-    when a Mapcompetion message is recieved the info about that worker is updated, the coordinator will read a keys from the results of that mapper and send an executeReduce(key) to each nonworking reducer that may need to work a key. If needed a failed map is scheduled on that free mapper. 
-    when a RecudeCompletion message is recieved the info about that worker is updated.
+    First the coordinator sends a defineMap and defineReduce to all workers, to tell them of the current Map and Reduce.
+    The coordinator sends and executeTask message to a mapper, with the index of the GlobalData to read. Then it will update the workersData structure.
+    When a taskCompletion message is recieved the info about that worker is updated, another task from the failedTaskQueue or the GlobalData is scheduled on that free mapper with the usual executeTask message. 
 
-    Fail tolerance:
-    the coordinato periodically sends a ping to the workers and sets a pingTimeout selfmessage. if the timeout is recieved before the pong the worker is considered failed (info updated). if a mapper fails a stopExecution is sent to every reducer that was working on the keys in its current output, its task is put into a queue. if a reducer fails its reduce is put into a queue.
-    when a task is dispathed a strugglerTimeout is set, if it is recieved before the worker finisches it is considered failed and a stopExecution is sent.
-    when a back online message is recieved the info about the worker is updated and if possible a new task if scheduled.
+    The coordinator will also periodically ping all workers by sending a ping and scheduling a self pingTimeout message, if no pong is recieved before a pingTimeout for that worker then it is considered failed and its worker data is updated. 
+    If a mapper fails its task is put into the failedTaskQueue, all reducers are informed of the failure with a mapperFailure message.
+    If a reducer fails all its work is lost, we wait for it to come back online.
+    
+    When a back online message is recieved the info about the worker is updated. If it is a mapper a new task is scheduled, if it is a reducer all mappers are informed and send the corresponding key.
+
+    when all tasks are completed a message is sent to the reducers telling to output the final result.
 
     messages:
-        executeMap();
-        executeReduce(key);
+        defineMap(Map*);
+        defineReduce(Reduce*);
+        executeTask(int index);
         Mapcompletion(workerId);
-        ReduceCompletion(workerId);
         ping();
         pingTimeout(workerId);
         pong(workerId);
-        strugglerTimeout(workerId);
+        mapperFailure(workerId);
+        resendKey(int reducerID);
         backOnline(workerId);
-        stopExecution();
+        TasksDone();
+
+        // strugglerTimeout(workerId);
+        // stopExecution();
+        
+        
 
     dataStructures:
-        GlobalData[] data;
+        GlobalData[] data: input data;
+        Map: map program;
+        Reduce: reduce program;
         workersData: contains id, type, task, working or failed;
-        failedMapQueue and failedReduceQueue;
-        MapTask: operations in a map
-        ReduceTask: operations in a reduce
-        data: dataset
+        failedTaskQueue, failedReducerQueue: queue of int;
     */
 }

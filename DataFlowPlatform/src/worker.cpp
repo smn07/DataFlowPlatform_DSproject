@@ -16,7 +16,7 @@ class Worker: public cSimpleModule{
 }
 
 class Mapper{
-    //Remove terminator
+    //Remove terminator, change reducers
 
     /*
     recieves the map from the coordinator with a defineMap message and saves the list of instructions, recieves the GlobalData structure. Recieves the executeTask message from the coordinator and fails with an x% chance. If it fails then its failed flag becomes true and set a timer for a Recovery self message, after recieveing the flag becomes false and a backonline message is sent to the coordinator. If it does not fail then the task is executed and an executionTime selfmessage is schedules, in the meanwhile every message recieved is delayed and the flag executing is set.

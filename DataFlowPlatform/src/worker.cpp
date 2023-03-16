@@ -57,7 +57,7 @@ class Mapper::Worker{
         FuncDef Map;
         Vector<Task> tasks;
         Vector<Task> result;
-        Vector<Task> resultArchive;
+        Pair<Vector<Task>,int> resultArchive;
         int reducerNumber;
         bool executing;
 
@@ -99,7 +99,7 @@ void mapper::handleExecuteTask(message executeTask){
     } else {
         int taskId = executeTask.id;
         executeMap(taskId);
-        scheduleMessage(executionTime, randTime);
+        scheduleMessage(executionTime(taskId), randTime);
     }
 }
 
@@ -111,18 +111,18 @@ void mapper::handleRecovery(){
 void mapper::handleExecutionTime(message exectionTime){
     sendMessage(mapCompletion(id),coordinatorOut);
     orderOutput();
-    for(Pair outPair in result){
-        sendMessage(getPairs(*outPair),reducerChannel[outpair.key%reducerNumber]);
-    }
-    resultArchive.add(result);
+    sendOutput();
+    resultArchive.add(<result,executionTime.taskId>);
     result.deleteAll();
     executing = false;
 }
 
 void mapper::handleResendKey(int reducerId){
-    for(Pair outPair in resultArchive){
+    //Da rifare 
+    for(Pair task in resultArchive){
+        int taskId;
         if (outPair%reducerNumber == reducerId){
-            sendMessage(getPairs(*outPair),reducerChannel[outpair.key%reducerNumber]);
+            sendMessage(getPairs(*outPair, ),reducerChannel[outpair.key%reducerNumber]);
         }
         
     }
@@ -148,4 +148,12 @@ class Reducer{
         pairs;
         tasksRead;
     */
+
+   private:
+        FuncDef reduce;
+        Task task;
+        Vector<int> tasksRead;
+
+        void handleSetReduce(FuncDef reduce);
+        void handleGetPairs();
 }

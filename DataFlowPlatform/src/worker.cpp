@@ -2,6 +2,9 @@
 
 using namespace omnetpp;
 
+use Task=vector<pair<int,int>>;
+use FuncDef=vector<pair<String,int>>;
+
 class Worker: public cSimpleModule{
     /*
     Workers are either mappers or reducers.
@@ -13,9 +16,16 @@ class Worker: public cSimpleModule{
         Ping();
         Pong(workerId);
     */
+   private:
+        int id;
+        bool failed;
+        int failProb;
+        void handlePing(){
+            sendMessage(pong(id),coordinatorOut);
+        }
 }
 
-class Mapper{
+class Mapper::Worker{
     //Remove terminator, change reducers
 
     /*
@@ -43,7 +53,83 @@ class Mapper{
         OutputPairs;
 
     */
+   private:
+        FuncDef Map;
+        Vector<Task> tasks;
+        Vector<Task> result;
+        Vector<Task> resultArchive;
+        int reducerNumber;
+        bool executing;
+
+        void run();
+        void handleDefineMap(message defineMap);
+        void handleSetData(message setData);
+        void handleExecuteTask(message executeTask);
 }
+
+void mapper::run(){
+    getMessage(){
+        while(executing){
+            wait();
+        }
+        switch (expression)
+        {
+        case //All messages
+            break;
+        
+        default:
+            break;
+        }
+    }
+}
+
+void mapper::handleDefineMap(message defineMap){
+    map = defineMap.map;
+}
+
+void mapper::handleSetData(message setData){
+    data = setData.data;
+}
+
+void mapper::handleExecuteTask(message executeTask){
+    //simulate failure;
+    if (simulateFailure){
+        failed = true;
+        scheduleMessage(recovery, randTime);
+    } else {
+        int taskId = executeTask.id;
+        executeMap(taskId);
+        scheduleMessage(executionTime, randTime);
+    }
+}
+
+void mapper::handleRecovery(){
+    failed = false;
+    sendMessage(backOnline(id),coordinatorOut);
+}
+
+void mapper::handleExecutionTime(message exectionTime){
+    sendMessage(mapCompletion(id),coordinatorOut);
+    orderOutput();
+    for(Pair outPair in result){
+        sendMessage(getPairs(*outPair),reducerChannel[outpair.key%reducerNumber]);
+    }
+    resultArchive.add(result);
+    result.deleteAll();
+    executing = false;
+}
+
+void mapper::handleResendKey(int reducerId){
+    for(Pair outPair in resultArchive){
+        if (outPair%reducerNumber == reducerId){
+            sendMessage(getPairs(*outPair),reducerChannel[outpair.key%reducerNumber]);
+        }
+        
+    }
+}
+
+
+
 
 class Reducer{
     /*

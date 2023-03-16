@@ -11,7 +11,7 @@ struct WorkersData{
     bool online;
 } WorkersData_t
 
-use Task=pair<int,int>;
+use Task=vector<pair<int,int>>;
 use FuncDef=vector<pair<String,int>>;
 
 class Coordinator: public cSimpleModule{

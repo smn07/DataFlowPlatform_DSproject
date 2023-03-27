@@ -1,6 +1,7 @@
 #include <omnetpp.h>
 
 using namespace omnetpp;
+using namespace std;
 
 use Task=vector<pair<int,int>>;
 use FuncDef=vector<pair<String,int>>;

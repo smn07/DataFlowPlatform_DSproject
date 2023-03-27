@@ -1,5 +1,4 @@
 #include <omnetpp.h>
-#include <std.h>
 
 using namespace omnetpp;
 using namespace std;

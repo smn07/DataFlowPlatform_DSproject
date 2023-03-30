@@ -1,7 +1,7 @@
 Input files: 
     JSON containing the definition of a sequence of one or more maps operation, one change key and one reduce operation. All operations are referd to as a task.
     CSV file containing the input as a series of key-value pairs.
-
+ 
 Coordinator
 Setup:
     The coordinator has an array workersData, containing informations about the id, task in execution and state of each worker.

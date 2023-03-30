@@ -1,80 +1,35 @@
 #include <omnetpp.h>
 #include <std.h>
+#include <iostream>
+#include <fstream>
+#include <json/json.h>
+
+
 
 using namespace omnetpp;
 using namespace std;
 
+use task=Pair<String,int>;
+
 struct WorkersData{
-    int id;
-    bool type; //0 mapper, 1 reducer
-    int taskId;
+    int workerId;
+    Task task;
     bool online;
 } WorkersData_t
 
-use Task=vector<pair<int,int>>;
-use FuncDef=vector<pair<String,int>>;
 
 class Coordinator: public cSimpleModule{
-    /*
-
-    //Implement message to change reducers after failure 
-
-    The coordinator has an array workersData, containing informations about the id, type, task executed (array of index of tasks done) and state of each worker.
-    Initially the Coordinator read and validates the JSON file with the map and the reduce and the input data. Then divides the input into tasks and populates the GlobalData, Map, Reduce and taskQueue structure.
-    
-    At Runtime:
-    First the coordinator sends a defineMap and defineReduce to all workers, to tell them of the current Map and Reduce. Also sends a setData to mappers with a pointer to the GlobalData.
-    The coordinator sends and executeTask message to a mapper, with the index of the GlobalData to read. Then it will update the workersData structure.
-    When a taskCompletion message is recieved the info about that worker is updated, another task from the queue is scheduled on that free mapper with the usual executeTask message. 
-
-    The coordinator will also periodically ping all workers by sending a ping and scheduling a self pingTimeout message, if no pong is recieved before a pingTimeout for that worker then it is considered failed and its worker data is updated. 
-    If a mapper fails its task is put on top of the queue.
-    If a reducer fails all its work is lost, we wait for it to come back online.
-    
-    When a back online message is recieved the info about the worker is updated. If it is a mapper a new task is scheduled, if it is a reducer all mappers are informed and send the corresponding key.
-
-    when all tasks are completed a message is sent to the reducers telling to output the final result.
-
-    messages:
-        defineMap(Map*);
-        defineReduce(Reduce*);
-        setData(GlobalData*);
-        executeTask(int index);
-        Mapcompletion(workerId);
-        ping(workerId);
-        pingTimeout(workerId);
-        pong(workerId);
-        resendKey(int reducerID);
-        backOnline(workerId);
-        TasksDone();
-
-        // strugglerTimeout(workerId);
-        // stopExecution();
-        
-        
-
-    dataStructures:
-        GlobalData[] data: input data;
-        Map: map program;
-        Reduce: reduce program;
-        workersData: contains id, type, task, working or failed;
-        taskQueue: queue of int;
-    */
     public:
         void run();
 
     private:
         void parseInput();
         void setup();
-        FuncDef parseMap(JSON);
-        FuncDef parseReduce(JSON);
-        FuncDef parseTasks(JSON,CSV);
 
-        FuncDef map;
-        FuncDef reduce;
-        Vector<Task> tasks;
         Vector<WorkersData_t> workersData;
-        Stack<int> taskQueue;
+        Vector<Task> taskQueue;
+        Vector<List<Pair<int,int>>> globalData;
+        Stack<Pair<int,int>> currentTaskQueue;
 
         int freeMapper(); //checks that there is a free mapper;
         int getFreeMapper(); //Gets a free mapper by reading workersData;
@@ -88,32 +43,78 @@ int main(){
 void Coordinator::run(){
     parseInput();
     setup();
-    while(!stack.empty() && freeWorker()){
-        int task = stack.pop();
-        int worker = getFreeMapper();
-        sendMessage(executeTask(task),mapperChannel(worker));
-        workersData[worker].taskId = task;
-    }
-    for(int i=0; i<WorkersData.size;i++){
-        sendMessage(ping(),outChannels[i]);
-        scheduleMessage(pingTimeout(i), self);  
-    }
 }
 
 void Coordinator::parseInput(){
-    //read JSON and CSV
-    map = parseMap(JSON);
-    reduce = parseReduce(JSON);
-    tasks = parseTasks(JSON,CSV);
+    //read JSON and fill taskQueue, also read number of chunks
+    int chunkNumber;
+    Json::Value subroutines;
+    std::ifstream program_file("program.json", std::ifstream::binary);
+    program_file >> subroutines;
+
+    //lettura array
+    //decoding col foreach
+    for(auto& subroutine : subroutines){
+        if (subroutine.key == "chunks"){
+            chunkNumber = subroutine.value;
+        } else {
+            taskQueue.add(subroutine.value);
+        } 
+    }
+
+    //fill currentTaskQueue
+    for(int i=0;i<chunkNumber;i++){
+        currentTaskQueue.add(new Pair(i,0));
+    }
+
+    //read CSV and fill 
+
+    // Open the CSV file for reading
+    std::ifstream csv_file("input.csv");
+
+    // Create a vector of vectors to hold the parsed data
+    std::vector<std::vector<std::string>> data;
+
+    // Read each line of the CSV file
+    std::string line;
+    while (std::getline(csv_file, line)) {
+        // Parse the line into fields using a stringstream
+        std::stringstream ss(line);
+        std::vector<std::string> fields;
+        std::string field;
+        while (std::getline(ss, field, ',')) {
+            fields.push_back(field);
+        }
+
+        // Add the fields to the data vector
+        data.push_back(fields);
+    }
+
+    // Print the parsed data to the console
+    for (const auto& fields : data) {
+        for (const auto& field : fields) {
+            //std::cout << field << "\t";
+        globalData[i%chunkNumber].add(field);
+        i++;
+
+        }
+        std::cout << std::endl;
+    }
+
+    /*int i = 0;
+    for(auto& pair : pair){
+        globalData[i%chunkNumber].add(pair);
+        i++;
+    }*/
+
+
+
 }
 
 void Coordinator::setup(){
-    sendMessage(defineMap(map), mapperChannels);
-    sendMessage(defineReduce(reduce), reduceChannels);
-    sendMessage(setData(tasks), mapperChannels);
-    for(i=0;i<tasks.size;i++){
-        stack.push(i);
-    }
+    //send ping
+    sendMessage(ping())
+    //send tasks
 }
 
 void Coordinator::handleTaskCompletion(message mapCompletio){

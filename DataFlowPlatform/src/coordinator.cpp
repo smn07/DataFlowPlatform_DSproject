@@ -1,4 +1,5 @@
 #include <omnetpp.h>
+#include <std.h>
 
 using namespace omnetpp;
 using namespace std;
@@ -95,7 +96,7 @@ void Coordinator::run(){
     }
     for(int i=0; i<WorkersData.size;i++){
         sendMessage(ping(),outChannels[i]);
-        scheduleMessage(pingTimeout(i), self);
+        scheduleMessage(pingTimeout(i), self);  
     }
 }
 

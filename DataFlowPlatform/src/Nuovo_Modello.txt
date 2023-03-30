@@ -5,8 +5,9 @@ Input files:
 Coordinator
 Setup:
     The coordinator has an array workersData, containing informations about the id, task in execution and state of each worker.
-    Initially the Coordinator read and validates the JSON and the CSV files, it will divide the input into chunks and populate the GlobalData and taskQueue structure (containing the sequence of operations to execute). 
-    An auxiliary queue currentTaskQueue is used at each step to keep track of which chunks have been worked at a certain step. At initialization it is filled with pairs containing the index of the first operation and the index of each chunk. We also keep an array of binary chunkDone representing which chunks we have already completed for the current task.
+    Initially the Coordinator read and validates the JSON and the CSV files, it will divide the input into chunks 
+    (JSON contains operations; CSV contains pairs.. it is necessary to apply each operation to all the pairs of the CSV file -> for each operation we have to divide the number of pairs into chunks) and populate the GlobalData and taskQueue structure (containing the sequence of operations to execute). 
+    An auxiliary queue currentTaskQueue is used at each step to keep track of which chunks have been worked at a certain step (it could be an association (pair) of the chunk id and task id). At initialization it is filled with pairs containing the index of the first operation and the index of each chunk. We also keep an array of binary chunkDone representing which chunks we have already completed for the current task.
     The coordinator sends a ping to all workers and schedules a pingTimeout.
     The coordinator also has an initially empty array with lenght equal to the number of chunks, this array is called reduceData.
 
@@ -15,11 +16,12 @@ Runtime:
     When a taskCompletion message is recieved workersData and chunkDone is updated, another task from the queue is scheduled on that worker. 
     If the currentTaskQueue is emptied and chunkDone is all 1s (binary true) we start to execute the next step. In doing so we reset chunkDone to all 0 and fill the queue with the next task.
 
-    The coordinator will periodically ping all workers by sending a ping and scheduling a self pingTimeout message, if no pong is recieved before a pingTimeout for that worker then it is considered failed and its worker data is updated. If a pong is recieved in time the pingTimeout for that worker is deleted and a new pong is sent, alongside the schedule of the pingTimeout. When a back online message is recieved the info about the worker is updated and a new task is scheduled.
+    The coordinator will periodically ping all workers by sending a ping and scheduling a self pingTimeout message, if no pong is recieved before a pingTimeout for that worker then it is considered failed and its worker data is updated. 
+    If a pong is recieved in time the pingTimeout for that worker is deleted and a new pong is sent, alongside the schedule of the pingTimeout. When a back online message is recieved the info about the worker is updated and a new task is scheduled.
     
     When a worker that was executing a task fails, the task is put on top of the currentTaskQueue.
 
-    In order to more efficiently perform the reduce, we use a data structure that indexes pairs by [key mod numberOfChunks]. It is the job of the coordinator to merge the changeKey results into the reduceInput array so that each cell contains values that belong to a single reduce operation.
+    In order to more efficiently perform the reduce, we use a data structure that indexes pairs by [key mod numberOfChunks]. It is the job of the coordinator to merge the changeKey results into the reduceData array so that each cell contains values that belong to a single reduce operation.
     At the end of the reduce step the reduceData will contain one value per cell and that is the final output.
 
 Messages: all parameters, when not specified, are pointers due to omnet++ limitations
@@ -28,8 +30,7 @@ Messages: all parameters, when not specified, are pointers due to omnet++ limita
     ping();
     pong(int workerId);
     pingTimeout(int workerId);
-    backOnline(int workerId);
-
+    backOnline(int workerId);         
 
 Worker
 Runtime:

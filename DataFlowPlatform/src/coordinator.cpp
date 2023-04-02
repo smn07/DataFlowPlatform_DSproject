@@ -15,6 +15,7 @@ struct WorkersData{
     int workerId;
     Task task;
     bool online;
+    cModule *wo; //questo è il nuovo aggiornamento
 } WorkersData_t
 
 
@@ -98,7 +99,6 @@ void Coordinator::parseInput(){
         i++;
 
         }
-        std::cout << std::endl;
     }
 
     /*int i = 0;
@@ -112,8 +112,32 @@ void Coordinator::parseInput(){
 }
 
 void Coordinator::setup(){
-    //send ping
-    sendMessage(ping())
+    /*WorkersData array definition*/
+    cSimulation *sim = getSimulation();
+    cModule *network = sim->getModuleByPath("DataflowPlatform");
+    int workerNumber = par("workerNumber").intValue(); //(questo non so se è giusto oppure se è network->par()..non capisco come accedere ai parametri della network)
+    cModule *subModule = network->getSubmodule("workers");
+
+    cModule *element = NULL; //attenzione ho fatto una modifica nella struct di WorkersData_t perchè non sapevo
+                            //come associare l'elemento di tipo cModulo a quello di WorkerData_t e quindi ho fatto
+                            //questa cosa. Non so se ha senso
+    for(int i=0; i<workerNumber; i++) {
+        element = subModule->getSubmoduleByIndex(i);
+        WorkersData_t newElement;
+        newElement.wo = element;
+        newElement.workerID = i;
+        newElement.Task = NULL;  //all'inizio non hanno nessun task assegnato
+        newElement.online = true;  //ho assunto che di default siano attivi
+        workersData.push_back(newElement); //agiungo il nuovo elemento nell'array workersData
+    }
+
+    //send ping for seeing if the worker is active (all'inizio sono tutti attivi)
+    Ping *msg = new Ping();
+    msg->p(1);
+    send(msg, "out"); //va finito non ho più tempo bella.
+    
+    
+    
     //send tasks
 }
 

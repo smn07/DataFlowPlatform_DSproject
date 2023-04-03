@@ -30,7 +30,7 @@ Messages: all parameters, when not specified, are pointers due to omnet++ limita
     ping();
     pong(int workerId);
     pingTimeout(int workerId);
-    backOnline(int workerId);         
+    backOnline(int workerId);     
 
 Worker
 Runtime:

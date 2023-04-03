@@ -3,24 +3,19 @@ package dataflowplatform;
 @license(LGPL);
 
 
-simple worker{
+simple Worker{
     parameters:
         int id;
-        bool running;
     gates:
-        input in;
-        output out;
+        inout port;
 }
 
 simple coordinator{
-    parameters: 
-        int workers;
     gates:
-        input in;
-        output out;
+        inout ports[];
 }
 
-channel TCPChannel extends ned.DatarateChannel{
+channel TCPChannel extends ned.DelayChannel{
     delay=uniform(100ms,150ms);
 }
 
@@ -28,12 +23,11 @@ network dataflowPlatform{
     parameters:
         int workerNumber = default(10);
     submodules:
-        workers[workerNumber]: worker {}
-        coordinator: coordinator{}
-        // i=0..n-1{workers[i].id=i;}
+        workers[workerNumber]: Worker;
+        coordinator: Coordinator;
     connections:
-        for i=0..n-1{
-            workers[i].out --> TCPChannel --> coordinator.in;
-            coordinator.out --> TCPChannel --> workers[i].in;
+        for i=0..workerNumber-1{
+            workers[i].port <--> TCPChannel <--> coordinator.ports++;
+            workers[i].id = i;
         }
 }

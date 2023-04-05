@@ -33,17 +33,23 @@ class Coordinator: public cSimpleModule{
         //Vettore di coppie <string,int> che rappresentano ogni singola operationze da eseguire
         Vector<Task> taskQueue;
         //Vettore con lista di coppie chiave valore divise in chunk
-        Vector<List<Pair<int,int>>> globalData;
+        Vector<Vector<Pair<int,int>>> globalData;
         //Stack contenente le operazioni da schedulare
         Stack<Pair<int,int>> currentTaskQueue;
         //Vettore con le informaizoni su quali chunk sono stati completati
         Vector<bool> chunkDone;
         //Sorted Input per la reduce
-        Vector<List<Pair<int,int>>> reduceData;
+        Vector<Vector<Pair<int,int>>> reduceData;
+        //Vettore degli id dei pingTimeout message
+        Vector<long> timeoutId;
         //numero di chunk in cui dividere l'input
         int chunkNumber;
         //numero di worker
         int workerNumber;
+}
+
+Coordinator(){
+    timeoutId = new Vector<long>(workerNumber);
 }
 
 int main(){
@@ -145,18 +151,19 @@ void Coordinator::setup(){
     for(int i=0; i<workerNumber; i++){
         SetId *setmsg = new SetId();
         pingmsg->id=i;
-        send(setmsg, out[i]); 
+        send(setmsg, "ports",i); 
     }
 
     //send ping for seeing if the worker is active (all'inizio sono tutti attivi)
     for(int i=0; i<workerNumber; i++){
         Ping *pingmsg = new Ping();
         pingmsg->p(i);
-        send(pinbgmsg, "out"); //va finito non ho più tempo bella.
+        send(pinbgmsg, "ports",i); //va finito non ho più tempo bella.
 
         PingTimeout *timeoutmsg = new PingTimeout();
         timeoutmsg->workerId = i;
-        send(timeoutmsg, port[i], randomTime);
+        workerNumber[i] = getId(timeoutmsg);
+        scheduleAt(simTime()+uniform(250ms,400ms),timeoutmsg);
     }
     
     assignTask();
@@ -167,13 +174,13 @@ void Coordinator::assignTask(){
     while(freeWorker>=0 && !currentTaskQueue.empty()){
         Pair<int,int> currentTask = currentTaskQueue.pop();
         ExecuteTask *msg = new ExecuteTask();
-        if (currentTask.value == taskQueue.size()){
-            msg->chunk = reduceData[currentTask.key];
+        if (currentTask.second == taskQueue.size()){
+            msg->chunk = reduceData[currentTask.first];
         } else {
-            msg->chunk = globalData[currentTask.key];
+            msg->chunk = globalData[currentTask.first];
         }
-        msg->op = taskQueue[currentTask.value];
-        send(msg,out[freeWorker]);
+        msg->op = taskQueue[currentTask.second];
+        send(msg,"ports",freeWorker);
         workersData[freeWorker].task = currentTask;
         freeWorker = getFreeWorker(); 
     }
@@ -195,30 +202,30 @@ void Coordinator::handleTaskCompleted(TaskCompleted *msg){
         //update worker status
         Pair<int,int> taskCompleted = workersData[workerId].task;
         workersData[workerId].task = NULL;
-        globalData[taskCompleted.key] = msg->result;
+        globalData[taskCompleted.first] = msg->result;
 
-        chunkDone[taskCompleted.key] = true;
+        chunkDone[taskCompleted.first] = true;
 
-        if(taskCompleted.value == taskQueue.size()-1){
+        if(taskCompleted.second == taskQueue.size()-1){
             //change key finished, need to sort the output
-            int chunkId = taskCompleted.key;
+            int chunkId = taskCompleted.first;
             for(Pair<int,int> pair : globalData[chunkId]){
-                reduceData[pair.key % workerNumber].add(pair);
+                reduceData[pair.first % workerNumber].add(pair);
             }    
             for(auto data : reduceData){
                 for(int i=0;i<data.size();i++){
                     for(int j=i;j<data.size();j++){
-                        if data[i].key>data[j].key{
+                        if data[i].first>data[j].first{
                             auto tmp = data[j];
                             data[j] = data[i];
-                            data[i] = data[j];
+                            data[i] = tmp;
                         }
                     }
                 }
             }
         }
         
-        if (taskCompleted.value == taskQueue.size() && chunksDone()){
+        if (taskCompleted.second == taskQueue.size() && chunksDone()){
             //program is done
             endProgram();
         } else {
@@ -226,11 +233,11 @@ void Coordinator::handleTaskCompleted(TaskCompleted *msg){
             if (!currentTaskQueue.empty()){
                 //There are tasks to schedule
                 assignTask();
-            } else if (chunksDone() && taskCompleted.value != taskQueue.size()){
+            } else if (chunksDone() && taskCompleted.second != taskQueue.size()){
                 //we need to fill the queue
                 for(int i=0;i<chunkNumber;i++){
                     chunkDone[i]=false;
-                    currentTaskQueue.push(new Pair<int,int>(i,taskCompleted.value+1));
+                    currentTaskQueue.push(new Pair<int,int>(i,taskCompleted.second+1));
                 }
                 assignTask();
             }
@@ -249,16 +256,18 @@ void Coordinator::chunksDone(){
 void Coordinator::handlePong(Pong *msg){
     int id=msg->id;
     if(workersData[id].online){
-        deleteMessage(pingTimeout(id)); // non funziona dobbiamo vedere come si fa
-        send(new Ping(), out[id]);
+        deleteMessage(timeoutId[id]); 
+        send(new Ping(), "ports",id);
         PingTimeout *timeoutmsg = new PingTimeout();
-        timeoutmsg->workerId = i;
-        send(timeoutmsg, out[i], randomTime);
+        timeoutmsg->workerId = id;
+        timeoutId[id] = getId(timeoutmsg);
+        scheduleAt(simTime()+uniform(250ms,400ms),timeoutmsg);
     }
 }
 
 void Coordinator::handlePingTimeout(PingTimeout *msg){
     int id = msg->id;
+    timeoutId[id] = 0;
     workersData[id].online = false;
     Task failedTask = workersData[id].task;
     workersData[id].task = NULL;

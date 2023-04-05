@@ -22,7 +22,7 @@ void Worker::handlePing(){
     if(!failed){
         Pong *msg = new Pong();
         msg->workerId = id;
-        send(msg,"out");
+        send(msg,"port");
     }
 }
 
@@ -30,15 +30,15 @@ void Worker::handleExecuteTask(ExecuteTask *msg){
     if(!failed){
         if(randomFail){
             failed = true;
-            send(new Recovery(),"in",randomTime);
+            scheduleAt(simTime()+uniform(500ms,700ms),new Recovery());
             return;
         }
-        List<Pair<int,int>> chunk = msg->chunk;
+        Vector<Pair<int,int>> chunk = msg->chunk;
         Pair<String,int> op = msg->op;
 
-        List<Pair<int,int>> result = new List<Pair<int,int>>();
+        Vector<Pair<int,int>> result = new Vector<Pair<int,int>>();
         executeOperation(chunk,op,reult);
-        send(new ExecutionTime(),"in",randomTime);
+        scheduleAt(simTime()+uniform(150ms,300ms),new ExecutionTime());
     }
 }
 
@@ -46,101 +46,101 @@ void Worker::handleExecutionTime(){
     TaskCompleted *msg = new TaskCompleted;
     msg->workerId = id;
     msg->result = result;
-    send(msg,"out");
+    send(msg,"port");
 }
 
 void Worker::handleRecovery(){
     BackOnline *msg;
     msg->workerId = id;
-    send(msg,"out");
+    send(msg,"port");
 }
 
-void Worker::executeOperation(List<Pair<int,int>> chunk, Pair<String,int> op, List<Pair<int,int>> result){
+void Worker::executeOperation(Vector<Pair<int,int>> chunk, Pair<String,int> op, Vector<Pair<int,int>> result){
     Pair<int,int> res = new Pair<int,int>();
-    switch (op.key)
+    switch (op.first)
     {
     case "ADD":
         for(Pair<int,int> pair : chunk){
-            res.key = pair.key;
-            res.value = pair.value + op.value;
+            res.first = pair.first;
+            res.second = pair.second + op.second;
             result.add(res);
         }
         break;
     
     case "SUB":
         for(Pair<int,int> pair : chunk){
-            res.key = pair.key;
-            res.value = pair.value - op.value;
+            res.first = pair.first;
+            res.second = pair.second - op.second;
             result.add(res);
         }
         break;
     
     case "MUL":
         for(Pair<int,int> pair : chunk){
-            res.key = pair.key;
-            res.value = pair.value * op.value;
+            res.first = pair.first;
+            res.second = pair.second * op.second;
             result.add(res);
         }
         break;
 
     case "DIV":
         for(Pair<int,int> pair : chunk){
-            res.key = pair.key;
-            res.value = pair.value / op.value;
+            res.first = pair.first;
+            res.second = pair.second / op.second;
             result.add(res);
         }
         break;
 
     case "CHANGEKEY":
         for(Pair<int,int> pair : chunk){
-            res.key = pair.value;
-            res.value = pair.key;
+            res.first = pair.second;
+            res.second = pair.first;
             result.add(res);
         }
         break;
     }
 
     case "REDUCE":
-        switch (op.value)
+        switch (op.second)
         {
         case "ADD":
-            res.key = chunk.getFirst().key;
-            res.value = 0;
+            res.first = chunk.getFirst().first;
+            res.second = 0;
             for(Pair<int,int> pair : chunk){
-                if(pair.key == res.key){
-                    res.value += pair.value;
+                if(pair.first == res.first){
+                    res.second += pair.second;
                 } else {
                     result.add(res);
-                    res.key = pair.key;
-                    res.value = value.value;
+                    res.first = pair.first;
+                    res.second = pair.second;
                 }
             }
             break;
 
         case "SUB":
-            res.key = chunk.getFirst().key;
-            res.value = 0;
+            res.first = chunk.getFirst().first;
+            res.second = 0;
             for(Pair<int,int> pair : chunk){
-                if(pair.key == res.key){
-                    res.value -= pair.value;
+                if(pair.first == res.first){
+                    res.second -= pair.second;
                 } else {
                     result.add(res);
-                    res.key = pair.key;
-                    res.value = value.value;
+                    res.first = pair.first;
+                    res.second = pair.second;
                 }
             }
             break;
 
         case "MUL":
-            res.key = chunk.getFirst().key;
-            res.value = 0;
+            res.first = chunk.getFirst().first;
+            res.second = 0;
             for(Pair<int,int> pair : chunk){
-                if(pair.key == res.key){
-                    res.value *= pair.value;
+                if(pair.first == res.first){
+                    res.second *= pair.second;
                 } else {
                     result.add(res);
-                    res.key = pair.key;
-                    res.value = value.value;
+                    res.first = pair.first;
+                    res.second = pair.second;
                 }
             }
             break;

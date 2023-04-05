@@ -9,6 +9,7 @@ message executeTask{
 
 message taskCompleted{
     int workerId;
+    List<Pair<int,int>> result;
 }
 
 message pingTimeout{
@@ -23,4 +24,8 @@ message BackOnline{
     int workerId;
 }
 
-message executionTime(){}
+message executionTime{}
+
+message SetId{
+    int id;
+}

@@ -13,7 +13,7 @@ use task=Pair<String,int>;
 
 struct WorkersData{
     int workerId;
-    Task task;
+    Pair<int,int> op;
     bool online;
     cModule *wo; //questo è il nuovo aggiornamento
 } WorkersData_t
@@ -28,17 +28,22 @@ class Coordinator: public cSimpleModule{
         void setup();
         void assignTask();
 
+        //Vettore con struct che contiene le informazioni su id, stato e operazione in esecuzione di ogni worker
         Vector<WorkersData_t> workersData;
+        //Vettore di coppie <string,int> che rappresentano ogni singola operationze da eseguire
         Vector<Task> taskQueue;
+        //Vettore con lista di coppie chiave valore divise in chunk
         Vector<List<Pair<int,int>>> globalData;
+        //Stack contenente le operazioni da schedulare
         Stack<Pair<int,int>> currentTaskQueue;
+        //Vettore con le informaizoni su quali chunk sono stati completati
         Vector<bool> chunkDone;
+        //Sorted Input per la reduce
         Vector<List<Pair<int,int>>> reduceData;
+        //numero di chunk in cui dividere l'input
         int chunkNumber;
+        //numero di worker
         int workerNumber;
-
-        int freeMapper(); //checks that there is a free mapper;
-        int getFreeMapper(); //Gets a free mapper by reading workersData;
 }
 
 int main(){
@@ -137,6 +142,12 @@ void Coordinator::setup(){
         workersData.push_back(newElement); //agiungo il nuovo elemento nell'array workersData
     }
 
+    for(int i=0; i<workerNumber; i++){
+        SetId *setmsg = new SetId();
+        pingmsg->id=i;
+        send(setmsg, out[i]); 
+    }
+
     //send ping for seeing if the worker is active (all'inizio sono tutti attivi)
     for(int i=0; i<workerNumber; i++){
         Ping *pingmsg = new Ping();
@@ -145,7 +156,7 @@ void Coordinator::setup(){
 
         PingTimeout *timeoutmsg = new PingTimeout();
         timeoutmsg->workerId = i;
-        send(timeoutmsg, out[i], randomTime);
+        send(timeoutmsg, port[i], randomTime);
     }
     
     assignTask();
@@ -177,13 +188,14 @@ void Coordinator::getFreeWorker(){
     }
 }
 
-void Coordinator::handleTaskCompletion(TaskCompleted *msg){
+void Coordinator::handleTaskCompleted(TaskCompleted *msg){
     int workerId = msg->workerId;
 
     if(workersData[id].online){
         //update worker status
-        Task taskCompleted = workersData[workerId].task;
+        Pair<int,int> taskCompleted = workersData[workerId].task;
         workersData[workerId].task = NULL;
+        globalData[taskCompleted.key] = msg->result;
 
         chunkDone[taskCompleted.key] = true;
 
@@ -193,6 +205,17 @@ void Coordinator::handleTaskCompletion(TaskCompleted *msg){
             for(Pair<int,int> pair : globalData[chunkId]){
                 reduceData[pair.key % workerNumber].add(pair);
             }    
+            for(auto data : reduceData){
+                for(int i=0;i<data.size();i++){
+                    for(int j=i;j<data.size();j++){
+                        if data[i].key>data[j].key{
+                            auto tmp = data[j];
+                            data[j] = data[i];
+                            data[i] = data[j];
+                        }
+                    }
+                }
+            }
         }
         
         if (taskCompleted.value == taskQueue.size() && chunksDone()){
@@ -209,6 +232,7 @@ void Coordinator::handleTaskCompletion(TaskCompleted *msg){
                     chunkDone[i]=false;
                     currentTaskQueue.push(new Pair<int,int>(i,taskCompleted.value+1));
                 }
+                assignTask();
             }
             //if the queue is empty but we are still processing some chunks we wait the next completion
         }

@@ -4,8 +4,6 @@ package dataflowplatform;
 
 
 simple Worker{
-    parameters:
-        int id;
     gates:
         inout port;
 }
@@ -28,6 +26,5 @@ network dataflowPlatform{
     connections:
         for i=0..workerNumber-1{
             workers[i].port <--> TCPChannel <--> coordinator.ports++;
-            workers[i].id = i;
         }
 }

@@ -14,6 +14,10 @@ class Worker: public cSimpleModule{
         void handlePing(){};
 }
 
+void Worker::handleSetId(SetId *msg){
+    id = msg->id;
+}
+
 void Worker::handlePing(){
     if(!failed){
         Pong *msg = new Pong();
@@ -32,7 +36,8 @@ void Worker::handleExecuteTask(ExecuteTask *msg){
         List<Pair<int,int>> chunk = msg->chunk;
         Pair<String,int> op = msg->op;
 
-        executeOperation(chunk,op);
+        List<Pair<int,int>> result = new List<Pair<int,int>>();
+        executeOperation(chunk,op,reult);
         send(new ExecutionTime(),"in",randomTime);
     }
 }
@@ -40,6 +45,7 @@ void Worker::handleExecuteTask(ExecuteTask *msg){
 void Worker::handleExecutionTime(){
     TaskCompleted *msg = new TaskCompleted;
     msg->workerId = id;
+    msg->result = result;
     send(msg,"out");
 }
 
@@ -49,38 +55,47 @@ void Worker::handleRecovery(){
     send(msg,"out");
 }
 
-void Worker::executeOperation(List<Pair<int,int>> chunk, Pair<String,int> op){
+void Worker::executeOperation(List<Pair<int,int>> chunk, Pair<String,int> op, List<Pair<int,int>> result){
+    Pair<int,int> res = new Pair<int,int>();
     switch (op.key)
     {
     case "ADD":
         for(Pair<int,int> pair : chunk){
-            pair.value = pair.value + op.value;
+            res.key = pair.key;
+            res.value = pair.value + op.value;
+            result.add(res);
         }
         break;
     
     case "SUB":
         for(Pair<int,int> pair : chunk){
-            pair.value = pair.value - op.value;
+            res.key = pair.key;
+            res.value = pair.value - op.value;
+            result.add(res);
         }
         break;
     
     case "MUL":
         for(Pair<int,int> pair : chunk){
-            pair.value = pair.value * op.value;
+            res.key = pair.key;
+            res.value = pair.value * op.value;
+            result.add(res);
         }
         break;
 
     case "DIV":
         for(Pair<int,int> pair : chunk){
-            pair.value = pair.value / op.value;
+            res.key = pair.key;
+            res.value = pair.value / op.value;
+            result.add(res);
         }
         break;
 
     case "CHANGEKEY":
         for(Pair<int,int> pair : chunk){
-            int tmp = pair.value;
-            pair.value = pair.key;
-            pair.key = pair.value;
+            res.key = pair.value;
+            res.value = pair.key;
+            result.add(res);
         }
         break;
     }
@@ -89,48 +104,45 @@ void Worker::executeOperation(List<Pair<int,int>> chunk, Pair<String,int> op){
         switch (op.value)
         {
         case "ADD":
-            Pair<int,int> accum = new Pair<int,int>(chunk.getFirst().key,0);
-            List<Pair<int,int>> res = new List<Pair<int,int>>;
-            for(int i=0;i<chunk.size();i++){
-                Pair<int,int> pair = chunk.removeFirst();
-                if (pair.key == accum.key){
-                    accum.value = accum.value + pair.value;
+            res.key = chunk.getFirst().key;
+            res.value = 0;
+            for(Pair<int,int> pair : chunk){
+                if(pair.key == res.key){
+                    res.value += pair.value;
                 } else {
-                    res.push(accum);
-                    accum = new Pair<int,int>(pair.key,pair.value);
+                    result.add(res);
+                    res.key = pair.key;
+                    res.value = value.value;
                 }
             }
-            chunk = res;
             break;
 
         case "SUB":
-            Pair<int,int> accum = new Pair<int,int>(chunk.getFirst().key,0);
-            List<Pair<int,int>> res = new List<Pair<int,int>>;
-            for(int i=0;i<chunk.size();i++){
-                Pair<int,int> pair = chunk.removeFirst();
-                if (pair.key == accum.key){
-                    accum.value = accum.value - pair.value;
+            res.key = chunk.getFirst().key;
+            res.value = 0;
+            for(Pair<int,int> pair : chunk){
+                if(pair.key == res.key){
+                    res.value -= pair.value;
                 } else {
-                    res.push(accum);
-                    accum = new Pair<int,int>(pair.key,pair.value);
+                    result.add(res);
+                    res.key = pair.key;
+                    res.value = value.value;
                 }
             }
-            chunk = res;
             break;
 
         case "MUL":
-            Pair<int,int> accum = new Pair<int,int>(chunk.getFirst().key,1);
-            List<Pair<int,int>> res = new List<Pair<int,int>>;
-            for(int i=0;i<chunk.size();i++){
-                Pair<int,int> pair = chunk.removeFirst();
-                if (pair.key == accum.key){
-                    accum.value = accum.value * pair.value;
+            res.key = chunk.getFirst().key;
+            res.value = 0;
+            for(Pair<int,int> pair : chunk){
+                if(pair.key == res.key){
+                    res.value *= pair.value;
                 } else {
-                    res.push(accum);
-                    accum = new Pair<int,int>(pair.key,pair.value);
+                    result.add(res);
+                    res.key = pair.key;
+                    res.value = value.value;
                 }
             }
-            chunk = res;
             break;
         }
     return;

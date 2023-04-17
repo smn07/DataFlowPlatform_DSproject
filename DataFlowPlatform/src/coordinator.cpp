@@ -1,22 +1,20 @@
 #include <omnetpp.h>
-#include <std.h>
 #include <iostream>
 #include <fstream>
 #include <json/json.h>
 
-
+//check for op null, va ripensato il json per la parte di reduce
 
 using namespace omnetpp;
 using namespace std;
 
-use task=Pair<String,int>;
+using task=pair<string,int>;
 
-struct WorkersData{
+struct workersData{
     int workerId;
-    Pair<int,int> op;
+    pair<int,int> op;
     bool online;
-    cModule *wo; //questo è il nuovo aggiornamento
-} WorkersData_t
+} workersData_t;
 
 
 class Coordinator: public cSimpleModule{
@@ -27,37 +25,39 @@ class Coordinator: public cSimpleModule{
         void parseInput();
         void setup();
         void assignTask();
+        int getFreeWorker();
+        bool chunksDone();
+        void endProgram(){return};
+        
+        virtual void initialize() override;
+        virtual void handleMessage(cMessage *msg) override;
+
+        void handleTaskCompleted(TaskCompleted *msg);
+        void handlePong(Pong *msg);
+        void handlePingTimeout(PingTimeout *msg);
+        void handleBackOnline(BackOnline *msg);
 
         //Vettore con struct che contiene le informazioni su id, stato e operazione in esecuzione di ogni worker
-        Vector<WorkersData_t> workersData;
+        vector<workersData> workersData;
         //Vettore di coppie <string,int> che rappresentano ogni singola operationze da eseguire
-        Vector<Task> taskQueue;
+        vector<task> taskQueue;
         //Vettore con lista di coppie chiave valore divise in chunk
-        Vector<Vector<Pair<int,int>>> globalData;
+        vector<vector<pair<int,int>>> globalData;
         //Stack contenente le operazioni da schedulare
-        Stack<Pair<int,int>> currentTaskQueue;
+        stack<pair<int,int>> currentTaskQueue;
         //Vettore con le informaizoni su quali chunk sono stati completati
-        Vector<bool> chunkDone;
+        vector<bool> chunkDone;
         //Sorted Input per la reduce
-        Vector<Vector<Pair<int,int>>> reduceData;
+        vector<vector<pair<int,int>>> reduceData;
         //Vettore degli id dei pingTimeout message
-        Vector<long> timeoutId;
+        vector<cMessage*> timeoutId;
         //numero di chunk in cui dividere l'input
         int chunkNumber;
         //numero di worker
         int workerNumber;
-}
+};
 
-Coordinator(){
-    timeoutId = new Vector<long>(workerNumber);
-}
-
-int main(){
-    Coordinator coordinator = new Coordinator();
-    coordinator.run();
-}
-
-void Coordinator::run(){
+void Coordinator::initialize(){
     parseInput();
     setup();
     assignTask();
@@ -66,7 +66,7 @@ void Coordinator::run(){
 void Coordinator::parseInput(){
     //read JSON and fill taskQueue, also read number of chunks
     Json::Value subroutines;
-    std::ifstream program_file("program.json", std::ifstream::binary);
+    ifstream program_file("program.json", ifstream::binary);
     program_file >> subroutines;
 
     //lettura array
@@ -75,32 +75,32 @@ void Coordinator::parseInput(){
         if (subroutine.key == "chunks"){
             chunkNumber = subroutine.value;
         } else {
-            taskQueue.add(subroutine.value);
+            taskQueue.push_back(subroutine.value);
         } 
     }
 
     //fill currentTaskQueue
     for(int i=0;i<chunkNumber;i++){
-        currentTaskQueue.add(new Pair(i,0));
+        currentTaskQueue.push(pair{i,0});
         chunkDone[i]=false;
     }
 
     //read CSV and fill 
 
     // Open the CSV file for reading
-    std::ifstream csv_file("input.csv");
+    ifstream csv_file("input.csv");
 
     // Create a vector of vectors to hold the parsed data
-    std::vector<std::vector<std::string>> data;
+    vector<vector<string>> data;
 
     // Read each line of the CSV file
-    std::string line;
-    while (std::getline(csv_file, line)) {
+    string line;
+    while (getline(csv_file, line)) {
         // Parse the line into fields using a stringstream
-        std::stringstream ss(line);
-        std::vector<std::string> fields;
-        std::string field;
-        while (std::getline(ss, field, ',')) {
+        stringstream ss(line);
+        vector<string> fields;
+        string field;
+        while (getline(ss, field, ',')) {
             fields.push_back(field);
         }
 
@@ -114,7 +114,6 @@ void Coordinator::parseInput(){
             //std::cout << field << "\t";
         globalData[i%chunkNumber].add(field);
         i++;
-
         }
     }
 
@@ -139,12 +138,7 @@ void Coordinator::setup(){
                             //come associare l'elemento di tipo cModulo a quello di WorkerData_t e quindi ho fatto
                             //questa cosa. Non so se ha senso
     for(int i=0; i<workerNumber; i++) {
-        element = subModule->getSubmoduleByIndex(i);
-        WorkersData_t newElement;
-        newElement.wo = element;
-        newElement.workerID = i;
-        newElement.Task = NULL;  //all'inizio non hanno nessun task assegnato
-        newElement.online = true;  //ho assunto che di default siano attivi
+        struct workersData newElement{i,pair<int,int>{-1,0},true};
         workersData.push_back(newElement); //agiungo il nuovo elemento nell'array workersData
     }
 
@@ -158,12 +152,12 @@ void Coordinator::setup(){
     for(int i=0; i<workerNumber; i++){
         Ping *pingmsg = new Ping();
         pingmsg->p(i);
-        send(pinbgmsg, "ports",i); //va finito non ho più tempo bella.
+        send(pingmsg, "ports",i); //va finito non ho più tempo bella.
 
         PingTimeout *timeoutmsg = new PingTimeout();
         timeoutmsg->workerId = i;
-        workerNumber[i] = getId(timeoutmsg);
-        scheduleAt(simTime()+uniform(250ms,400ms),timeoutmsg);
+        timeoutId[i] = timeoutmsg;
+        scheduleAt(simTime()+par("timeout"),timeoutmsg);
     }
     
     assignTask();
@@ -172,7 +166,7 @@ void Coordinator::setup(){
 void Coordinator::assignTask(){
     int freeWorker = getFreeWorker();
     while(freeWorker>=0 && !currentTaskQueue.empty()){
-        Pair<int,int> currentTask = currentTaskQueue.pop();
+        pair<int,int> currentTask=currentTaskQueue.pop();
         ExecuteTask *msg = new ExecuteTask();
         if (currentTask.second == taskQueue.size()){
             msg->chunk = reduceData[currentTask.first];
@@ -181,14 +175,14 @@ void Coordinator::assignTask(){
         }
         msg->op = taskQueue[currentTask.second];
         send(msg,"ports",freeWorker);
-        workersData[freeWorker].task = currentTask;
+        workersData[freeWorker].op = currentTask;
         freeWorker = getFreeWorker(); 
     }
 }
 
-void Coordinator::getFreeWorker(){
-    for(workerData worker : workersData){
-        if (worker.online && worker.task == NULL){
+int Coordinator::getFreeWorker(){
+    for(auto worker : workersData){
+        if (worker.online && worker.op == pair<int,int>{-1,0}){
             return worker.workerId;
         }
         return -1;
@@ -198,10 +192,10 @@ void Coordinator::getFreeWorker(){
 void Coordinator::handleTaskCompleted(TaskCompleted *msg){
     int workerId = msg->workerId;
 
-    if(workersData[id].online){
+    if(workersData[workerId].online){
         //update worker status
-        Pair<int,int> taskCompleted = workersData[workerId].task;
-        workersData[workerId].task = NULL;
+        pair<int,int> taskCompleted = workersData[workerId].op;
+        workersData[workerId].op = pair<int,int>{-1,0};
         globalData[taskCompleted.first] = msg->result;
 
         chunkDone[taskCompleted.first] = true;
@@ -209,13 +203,13 @@ void Coordinator::handleTaskCompleted(TaskCompleted *msg){
         if(taskCompleted.second == taskQueue.size()-1){
             //change key finished, need to sort the output
             int chunkId = taskCompleted.first;
-            for(Pair<int,int> pair : globalData[chunkId]){
-                reduceData[pair.first % workerNumber].add(pair);
+            for(pair<int,int> pair : globalData[chunkId]){
+                reduceData[pair.first % workerNumber].push_back(pair);
             }    
             for(auto data : reduceData){
                 for(int i=0;i<data.size();i++){
                     for(int j=i;j<data.size();j++){
-                        if data[i].first>data[j].first{
+                        if (data[i].first>data[j].first){
                             auto tmp = data[j];
                             data[j] = data[i];
                             data[i] = tmp;
@@ -237,7 +231,7 @@ void Coordinator::handleTaskCompleted(TaskCompleted *msg){
                 //we need to fill the queue
                 for(int i=0;i<chunkNumber;i++){
                     chunkDone[i]=false;
-                    currentTaskQueue.push(new Pair<int,int>(i,taskCompleted.second+1));
+                    currentTaskQueue.push(pair<int,int>{i,taskCompleted.second+1});
                 }
                 assignTask();
             }
@@ -246,7 +240,7 @@ void Coordinator::handleTaskCompleted(TaskCompleted *msg){
     }
 }
 
-void Coordinator::chunksDone(){
+bool Coordinator::chunksDone(){
     for (bool chunk : chunkDone){
         if(!chunk){return false;}
     }
@@ -256,12 +250,12 @@ void Coordinator::chunksDone(){
 void Coordinator::handlePong(Pong *msg){
     int id=msg->id;
     if(workersData[id].online){
-        deleteMessage(timeoutId[id]); 
+        delete timeoutId[id]; 
         send(new Ping(), "ports",id);
         PingTimeout *timeoutmsg = new PingTimeout();
         timeoutmsg->workerId = id;
-        timeoutId[id] = getId(timeoutmsg);
-        scheduleAt(simTime()+uniform(250ms,400ms),timeoutmsg);
+        timeoutId[id] = timeoutmsg;
+        scheduleAt(simTime()+par("timeout"),timeoutmsg);
     }
 }
 
@@ -269,13 +263,30 @@ void Coordinator::handlePingTimeout(PingTimeout *msg){
     int id = msg->id;
     timeoutId[id] = 0;
     workersData[id].online = false;
-    Task failedTask = workersData[id].task;
-    workersData[id].task = NULL;
+    pair<int,int> failedTask = workersData[id].op;
+    workersData[id].op = pair<int,int>{-1,0};
     currentTaskQueue.push(failedTask);
 }
 
 void Coordinator::handleBackOnline(BackOnline *msg){
-    int id = BackOnline->id;
+    int id = msg->id;
     workersData[id].online = true;
     assignTask();
+}
+
+void Coordinator::handleMessage(cMessage *msg){
+    switch (msg->getKind())
+    {
+    case TaskCompleted:
+        handleTaskCompleted(msg);
+        break;
+    case Pong:
+        handlePong(msg);
+        break;
+    case PingTimeout:
+        handlePingTimeout(msg);
+        break;
+    case BackOnline:
+        handleBackOnline(msg);
+        break;
 }

@@ -3,15 +3,32 @@
 using namespace omnetpp;
 using namespace std;
 
-use Task=vector<pair<int,int>>;
-use FuncDef=vector<pair<String,int>>;
+//VA fatto l'handle message
+
+using task=vector<pair<int,int>>;
+using funcDef=vector<pair<string,int>>;
 
 class Worker: public cSimpleModule{
    private:
         int id;
         bool failed;
         int failProb;
-        void handlePing(){};
+        vector<pair<int,int>> result;
+
+        virtual void initialize() override;
+        virtual void handleMessage(cMessage *msg) override;
+        void handlePing();
+        void handleSetId(SetId *msg);
+        void handleExecuteTask(ExecuteTask *msg);
+        void handleExecutionTime();
+        void handleRecovery();
+        void executeOperation(vector<pair<int,int>> chunk, pair<string,int> op);
+
+};
+
+void Worker::initialize(){
+    failed = false;
+    failProb = par("failure");
 }
 
 void Worker::handleSetId(SetId *msg){
@@ -30,15 +47,14 @@ void Worker::handleExecuteTask(ExecuteTask *msg){
     if(!failed){
         if(randomFail){
             failed = true;
-            scheduleAt(simTime()+uniform(500ms,700ms),new Recovery());
+            scheduleAt(simTime()+par("recovery"),new Recovery());
             return;
         }
-        Vector<Pair<int,int>> chunk = msg->chunk;
-        Pair<String,int> op = msg->op;
+        vector<pair<int,int>> chunk = msg->chunk;
+        pair<string,int> op = msg->op;
 
-        Vector<Pair<int,int>> result = new Vector<Pair<int,int>>();
-        executeOperation(chunk,op,reult);
-        scheduleAt(simTime()+uniform(150ms,300ms),new ExecutionTime());
+        executeOperation(chunk,op);
+        scheduleAt(simTime()+par("exec"),new ExecutionTime());
     }
 }
 
@@ -55,95 +71,72 @@ void Worker::handleRecovery(){
     send(msg,"port");
 }
 
-void Worker::executeOperation(Vector<Pair<int,int>> chunk, Pair<String,int> op, Vector<Pair<int,int>> result){
-    Pair<int,int> res = new Pair<int,int>();
-    switch (op.first)
-    {
-    case "ADD":
-        for(Pair<int,int> pair : chunk){
+void Worker::executeOperation(vector<pair<int,int>> chunk, pair<string,int> op){
+    pair<int,int> res;
+    if(op.first=="ADD"){
+        for(pair<int,int> pair : chunk){
             res.first = pair.first;
             res.second = pair.second + op.second;
-            result.add(res);
+            result.push_back(res);
         }
-        break;
-    
-    case "SUB":
-        for(Pair<int,int> pair : chunk){
+    } else if (op.first=="SUB"){
+        for(pair<int,int> pair : chunk){
             res.first = pair.first;
             res.second = pair.second - op.second;
-            result.add(res);
+            result.push_back(res);
         }
-        break;
-    
-    case "MUL":
-        for(Pair<int,int> pair : chunk){
-            res.first = pair.first;
-            res.second = pair.second * op.second;
-            result.add(res);
-        }
-        break;
-
-    case "DIV":
-        for(Pair<int,int> pair : chunk){
+    } else if (op.first=="DIV"){
+        for(pair<int,int> pair : chunk){
             res.first = pair.first;
             res.second = pair.second / op.second;
-            result.add(res);
+            result.push_back(res);
         }
-        break;
-
-    case "CHANGEKEY":
-        for(Pair<int,int> pair : chunk){
+    } else if (op.first=="CHANGEKEY"){
+        for(pair<int,int> pair : chunk){
             res.first = pair.second;
             res.second = pair.first;
-            result.add(res);
+            result.push_back(res);
         }
-        break;
-    }
-
-    case "REDUCE":
-        switch (op.second)
-        {
-        case "ADD":
-            res.first = chunk.getFirst().first;
+    } else if (op.first=="REDUCE"){
+        if(op.second==1){
+            //ADD
+            res.first = chunk.front().first;
             res.second = 0;
-            for(Pair<int,int> pair : chunk){
+            for(pair<int,int> pair : chunk){
                 if(pair.first == res.first){
                     res.second += pair.second;
                 } else {
-                    result.add(res);
+                    result.push_back(res);
                     res.first = pair.first;
                     res.second = pair.second;
                 }
             }
-            break;
-
-        case "SUB":
-            res.first = chunk.getFirst().first;
+        } else if (op.second==2){
+            //SUB
+            res.first = chunk.front().first;
             res.second = 0;
-            for(Pair<int,int> pair : chunk){
+            for(pair<int,int> pair : chunk){
                 if(pair.first == res.first){
                     res.second -= pair.second;
                 } else {
-                    result.add(res);
+                    result.push_back(res);
                     res.first = pair.first;
                     res.second = pair.second;
                 }
             }
-            break;
-
-        case "MUL":
-            res.first = chunk.getFirst().first;
-            res.second = 0;
-            for(Pair<int,int> pair : chunk){
+        } else if (op.second==3){
+            //MUL
+            res.first = chunk.front().first;
+            res.second = 1;
+            for(pair<int,int> pair : chunk){
                 if(pair.first == res.first){
                     res.second *= pair.second;
                 } else {
-                    result.add(res);
+                    result.push_back(res);
                     res.first = pair.first;
                     res.second = pair.second;
                 }
             }
-            break;
         }
-    return;
+    }
 }

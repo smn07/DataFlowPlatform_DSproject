@@ -3,7 +3,7 @@
 using namespace omnetpp;
 using namespace std;
 
-//VA fatto l'handle message
+//Va fatto l'handle message
 
 using task=vector<pair<int,int>>;
 using funcDef=vector<pair<string,int>>;
@@ -45,7 +45,7 @@ void Worker::handlePing(){
 
 void Worker::handleExecuteTask(ExecuteTask *msg){
     if(!failed){
-        if(randomFail){
+        if(rand()%(10-failProb) == 0){
             failed = true;
             scheduleAt(simTime()+par("recovery"),new Recovery());
             return;
@@ -97,46 +97,64 @@ void Worker::executeOperation(vector<pair<int,int>> chunk, pair<string,int> op){
             res.second = pair.first;
             result.push_back(res);
         }
-    } else if (op.first=="REDUCE"){
-        if(op.second==1){
-            //ADD
-            res.first = chunk.front().first;
-            res.second = 0;
-            for(pair<int,int> pair : chunk){
-                if(pair.first == res.first){
-                    res.second += pair.second;
-                } else {
-                    result.push_back(res);
-                    res.first = pair.first;
-                    res.second = pair.second;
-                }
+    } else if (op.first=="REDUCEADD"){
+        //ADD
+        res.first = chunk.front().first;
+        res.second = 0;
+        for(pair<int,int> pair : chunk){
+            if(pair.first == res.first){
+                res.second += pair.second;
+            } else {
+                result.push_back(res);
+                res.first = pair.first;
+                res.second = pair.second;
             }
-        } else if (op.second==2){
-            //SUB
-            res.first = chunk.front().first;
-            res.second = 0;
-            for(pair<int,int> pair : chunk){
-                if(pair.first == res.first){
-                    res.second -= pair.second;
-                } else {
-                    result.push_back(res);
-                    res.first = pair.first;
-                    res.second = pair.second;
-                }
+        }
+    } else if (op.first=="REDUCESUB"){
+        //SUB
+        res.first = chunk.front().first;
+        res.second = 0;
+        for(pair<int,int> pair : chunk){
+            if(pair.first == res.first){
+                res.second -= pair.second;
+            } else {
+                result.push_back(res);
+                res.first = pair.first;
+                res.second = pair.second;
             }
-        } else if (op.second==3){
-            //MUL
-            res.first = chunk.front().first;
-            res.second = 1;
-            for(pair<int,int> pair : chunk){
-                if(pair.first == res.first){
-                    res.second *= pair.second;
-                } else {
-                    result.push_back(res);
-                    res.first = pair.first;
-                    res.second = pair.second;
-                }
+        }
+    } else if (op.first=="REDUCEMUL"){
+        //MUL
+        res.first = chunk.front().first;
+        res.second = 1;
+        for(pair<int,int> pair : chunk){
+            if(pair.first == res.first){
+                res.second *= pair.second;
+            } else {
+                result.push_back(res);
+                res.first = pair.first;
+                res.second = pair.second;
             }
         }
     }
+}
+
+void Worker::handleMessage(cMessage *msg){
+    switch (msg->getKind())
+    {
+    case SetId:
+        handleSetId(msg);
+        break;
+    case Ping:
+        handlePing(msg);
+        break;
+    case ExecuteTask:
+        handleExecuteTask(msg);
+        break;
+    case ExecutionTime:
+        handleExecutionTime();
+        break;
+    case Recovery:
+        handleRecovery();
+        break;
 }

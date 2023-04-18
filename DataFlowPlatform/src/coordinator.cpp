@@ -3,8 +3,6 @@
 #include <fstream>
 #include <json/json.h>
 
-//check for op null, va ripensato il json per la parte di reduce
-
 using namespace omnetpp;
 using namespace std;
 
@@ -27,7 +25,7 @@ class Coordinator: public cSimpleModule{
         void assignTask();
         int getFreeWorker();
         bool chunksDone();
-        void endProgram(){return};
+        void endProgram(){return;};
         
         virtual void initialize() override;
         virtual void handleMessage(cMessage *msg) override;
@@ -40,11 +38,12 @@ class Coordinator: public cSimpleModule{
         //Vettore con struct che contiene le informazioni su id, stato e operazione in esecuzione di ogni worker
         vector<workersData> workersData;
         //Vettore di coppie <string,int> che rappresentano ogni singola operationze da eseguire
-        vector<task> taskQueue;
+        vector<task> mapTaskQueue;
+        task reduceTask;
         //Vettore con lista di coppie chiave valore divise in chunk
         vector<vector<pair<int,int>>> globalData;
-        //Stack contenente le operazioni da schedulare
-        stack<pair<int,int>> currentTaskQueue;
+        //Stack contenente l'indice del chunk su cui lavorare, l'indice dell'operazione da schedulare e un bool per sapere se è una map o una reduce
+        stack<pair<bool,pair<int,int>>> currentTaskQueue;
         //Vettore con le informaizoni su quali chunk sono stati completati
         vector<bool> chunkDone;
         //Sorted Input per la reduce
@@ -74,14 +73,16 @@ void Coordinator::parseInput(){
     for(auto& subroutine : subroutines){
         if (subroutine.key == "chunks"){
             chunkNumber = subroutine.value;
+        } else if (subroutine.key == "Map") {
+            mapTaskQueue.push_back(subroutine.value);
         } else {
-            taskQueue.push_back(subroutine.value);
-        } 
+            reduceTask = subroutine.value;
+        }
     }
 
     //fill currentTaskQueue
     for(int i=0;i<chunkNumber;i++){
-        currentTaskQueue.push(pair{i,0});
+        currentTaskQueue.push(pair{false,pair{i,0}});
         chunkDone[i]=false;
     }
 
@@ -129,30 +130,22 @@ void Coordinator::parseInput(){
 
 void Coordinator::setup(){
     /*WorkersData array definition*/
-    cSimulation *sim = getSimulation();
-    cModule *network = sim->getModuleByPath("DataflowPlatform");
-    workerNumber = par("workerNumber").intValue(); //(questo non so se è giusto oppure se è network->par()..non capisco come accedere ai parametri della network)
-    cModule *subModule = network->getSubmodule("workers");
-
-    cModule *element = NULL; //attenzione ho fatto una modifica nella struct di WorkersData_t perchè non sapevo
-                            //come associare l'elemento di tipo cModulo a quello di WorkerData_t e quindi ho fatto
-                            //questa cosa. Non so se ha senso
     for(int i=0; i<workerNumber; i++) {
         struct workersData newElement{i,pair<int,int>{-1,0},true};
         workersData.push_back(newElement); //agiungo il nuovo elemento nell'array workersData
     }
-
+    /*Setta l'id di ogni worker*/
     for(int i=0; i<workerNumber; i++){
         SetId *setmsg = new SetId();
         pingmsg->id=i;
         send(setmsg, "ports",i); 
     }
 
-    //send ping for seeing if the worker is active (all'inizio sono tutti attivi)
+    /*Manda il primo ping ad ogni worker e schedula il timeout*/
     for(int i=0; i<workerNumber; i++){
         Ping *pingmsg = new Ping();
         pingmsg->p(i);
-        send(pingmsg, "ports",i); //va finito non ho più tempo bella.
+        send(pingmsg, "ports",i); 
 
         PingTimeout *timeoutmsg = new PingTimeout();
         timeoutmsg->workerId = i;
@@ -166,16 +159,21 @@ void Coordinator::setup(){
 void Coordinator::assignTask(){
     int freeWorker = getFreeWorker();
     while(freeWorker>=0 && !currentTaskQueue.empty()){
-        pair<int,int> currentTask=currentTaskQueue.pop();
+        //Se vi sono worker liberi e task da schedulare
+        pair<bool,pair<int,int>> currentTask=currentTaskQueue.pop();
         ExecuteTask *msg = new ExecuteTask();
-        if (currentTask.second == taskQueue.size()){
+        if (currentTask.first){
+            //Se stiamo schedulando una reduce leggiamo da reduce data altrimenti leggiamo da globalData
             msg->chunk = reduceData[currentTask.first];
+            msg->op = reduceTask;
+            workersData[freeWorker].op = pair<int,int>{currentTask.second.first,-1};//il -1 indica che è una reduce
         } else {
-            msg->chunk = globalData[currentTask.first];
+            msg->chunk = globalData[currentTask.second.first];
+            msg->op = mapTaskQueue[currentTask.second.second];
+            workersData[freeWorker].op = currentTask.second;
         }
-        msg->op = taskQueue[currentTask.second];
+        
         send(msg,"ports",freeWorker);
-        workersData[freeWorker].op = currentTask;
         freeWorker = getFreeWorker(); 
     }
 }
@@ -200,8 +198,9 @@ void Coordinator::handleTaskCompleted(TaskCompleted *msg){
 
         chunkDone[taskCompleted.first] = true;
 
-        if(taskCompleted.second == taskQueue.size()-1){
-            //change key finished, need to sort the output
+        //check for next task to schedule
+        if(taskCompleted.second == mapTaskQueue.size()){
+            //reduce is next, need to sort the chunk
             int chunkId = taskCompleted.first;
             for(pair<int,int> pair : globalData[chunkId]){
                 reduceData[pair.first % workerNumber].push_back(pair);
@@ -219,19 +218,22 @@ void Coordinator::handleTaskCompleted(TaskCompleted *msg){
             }
         }
         
-        if (taskCompleted.second == taskQueue.size() && chunksDone()){
-            //program is done
+        if (taskCompleted.second == -1 && chunksDone()){
+            //program is done, il -1 indica che abbiamo terminato una reduce
             endProgram();
         } else {
             //program is not done, schedule next op
             if (!currentTaskQueue.empty()){
                 //There are tasks to schedule
                 assignTask();
-            } else if (chunksDone() && taskCompleted.second != taskQueue.size()){
+            } else if (chunksDone()){
                 //we need to fill the queue
                 for(int i=0;i<chunkNumber;i++){
                     chunkDone[i]=false;
-                    currentTaskQueue.push(pair<int,int>{i,taskCompleted.second+1});
+                    if (taskCompleted.second == mapTaskQueue.size()){
+                        //dobbiamo riempire con la reduce
+                        currentTaskQueue.push(pair<bool,pair<int,int>>{true,pair<int,int>{i,-1}}); 
+                    }
                 }
                 assignTask();
             }
@@ -265,7 +267,7 @@ void Coordinator::handlePingTimeout(PingTimeout *msg){
     workersData[id].online = false;
     pair<int,int> failedTask = workersData[id].op;
     workersData[id].op = pair<int,int>{-1,0};
-    currentTaskQueue.push(failedTask);
+    currentTaskQueue.push(pair<bool,pair<int,int>>{failedTask.second==-1?true:false,pair<int,int>{failedTask.first,failedTask.second}});
 }
 
 void Coordinator::handleBackOnline(BackOnline *msg){

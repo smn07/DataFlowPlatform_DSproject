@@ -5,7 +5,7 @@ package dataflowplatform;
 
 simple Worker{
     parameters:
-        int failure = uniform(2,10);
+        int failure = uniform(1,9);
         int recovery = uniform(500ms,750ms);
         int exec = uniform(100ms,250ms);
     gates:

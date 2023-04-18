@@ -3,7 +3,8 @@ import java.util.concurrent.ThreadLocalRandom;
 public class makeJSON {
     public static void main(String[] args) {
 
-        String[] op = {"ADD","MUL","DIV","SUB","ADD","ADD","SUB","SUB","ADD","ADD","MUL"};
+        String[] opMap = {"ADD","MUL","DIV","SUB","ADD","ADD","SUB","SUB","ADD","ADD","MUL","CHANGEKEY"};
+        String[] opReduce = {"REDUCEADD","REDUCEMUL","REDUCESUB"};
         System.out.print("{");   
         System.out.print("\"Map\":[");  
         System.out.print("{\"ADD\":\"2\"}");   
@@ -11,17 +12,15 @@ public class makeJSON {
         for(int i=0;i<n;i++){
             int s = ThreadLocalRandom.current().nextInt(0, 11);
             int r = ThreadLocalRandom.current().nextInt(1, 20);
-            System.out.print(",{\"" + op[s] + "\":\"" + r + "\"}");       
+            System.out.print(",{\"" + opMap[s] + "\":\"" + r + "\"}");       
         } 
         System.out.print("]");   
-        System.out.print(", \"CHANGEKEY\":\"NULL\", \"REDUCE\":[");
-        System.out.print("{\"ADD\":\"NULL\"}");   
-        n = ThreadLocalRandom.current().nextInt(10, 30);
-        for(int i=0;i<n;i++){
-            int s = ThreadLocalRandom.current().nextInt(0, 11);
-            System.out.print(",{\"" + op[s] + "\":\"NULL\"}");       
-        } 
-        System.out.print("]");      
+        System.out.print(",\"Reduce\":");
+        int s = ThreadLocalRandom.current().nextInt(0, 3);
+        System.out.print("{" + opReduce[s] + "\":\"NULL\"}");  
+        System.out.print(",\"Chunks\":");
+        int d = ThreadLocalRandom.current().nextInt(10, 30);
+        System.out.print(d +"}");              
         System.out.print("}");      
     }
 

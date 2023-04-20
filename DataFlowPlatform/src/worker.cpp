@@ -1,9 +1,8 @@
 #include <omnetpp.h>
+#include <filemess_m.h>
 
 using namespace omnetpp;
 using namespace std;
-
-//Va fatto l'handle message
 
 using task=vector<pair<int,int>>;
 using funcDef=vector<pair<string,int>>;
@@ -59,7 +58,7 @@ void Worker::handleExecuteTask(ExecuteTask *msg){
 }
 
 void Worker::handleExecutionTime(){
-    TaskCompleted *msg = new TaskCompleted;
+    TaskCompleted *msg;
     msg->workerId = id;
     msg->result = result;
     send(msg,"port");

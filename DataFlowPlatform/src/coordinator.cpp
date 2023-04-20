@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <json/json.h>
+#include <filemess_m.h>
 
 using namespace omnetpp;
 using namespace std;
@@ -16,9 +17,6 @@ struct workersData{
 
 
 class Coordinator: public cSimpleModule{
-    public:
-        void run();
-
     private:
         void parseInput();
         void setup();
@@ -64,19 +62,21 @@ void Coordinator::initialize(){
 
 void Coordinator::parseInput(){
     //read JSON and fill taskQueue, also read number of chunks
-    Json::Value subroutines;
+    Json::Value inputProgram;
     ifstream program_file("program.json", ifstream::binary);
-    program_file >> subroutines;
+    program_file >> inputProgram;
 
     //lettura array
     //decoding col foreach
-    for(auto& subroutine : subroutines){
-        if (subroutine.key == "chunks"){
-            chunkNumber = subroutine.value;
-        } else if (subroutine.key == "Map") {
-            mapTaskQueue.push_back(subroutine.value);
+    for(auto& sectionKey : inputProgram.getMemberNames()){
+        if (sectionKey == "chunks"){
+            chunkNumber = inputProgram[sectionKey].asInt();
+        } else if (sectionKey == "Map") {
+            for(auto& inputPair : inputProgram[sectionKey]){
+                mapTaskQueue.push_back(pair<string,int>{inputPair.getMemberNames()[0],inputPair.asInt()});
+            }
         } else {
-            reduceTask = subroutine.value;
+            reduceTask = pair<string,int>{inputProgram[sectionKey].getMemberNames()[0],-1};
         }
     }
 
@@ -109,23 +109,12 @@ void Coordinator::parseInput(){
         data.push_back(fields);
     }
 
-    // Print the parsed data to the console
+    // fill globaldata
+    int i = 0;
     for (const auto& fields : data) {
-        for (const auto& field : fields) {
-            //std::cout << field << "\t";
-        globalData[i%chunkNumber].add(field);
+        globalData[i%chunkNumber].push_back(pair<int,int>{stoi(fields[0]),stoi(fields[1])});
         i++;
-        }
-    }
-
-    /*int i = 0;
-    for(auto& pair : pair){
-        globalData[i%chunkNumber].add(pair);
-        i++;
-    }*/
-
-
-
+   }
 }
 
 void Coordinator::setup(){
@@ -160,7 +149,8 @@ void Coordinator::assignTask(){
     int freeWorker = getFreeWorker();
     while(freeWorker>=0 && !currentTaskQueue.empty()){
         //Se vi sono worker liberi e task da schedulare
-        pair<bool,pair<int,int>> currentTask=currentTaskQueue.pop();
+        pair<bool,pair<int,int>> currentTask = currentTaskQueue.top();
+        currentTaskQueue.pop();
         ExecuteTask *msg = new ExecuteTask();
         if (currentTask.first){
             //Se stiamo schedulando una reduce leggiamo da reduce data altrimenti leggiamo da globalData

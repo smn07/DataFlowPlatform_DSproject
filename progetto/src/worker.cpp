@@ -1,5 +1,5 @@
 #include <omnetpp.h>
-#include <messages.cpp>
+//#include <filemess_m.h>
 
 using namespace omnetpp;
 using namespace std;
@@ -31,13 +31,13 @@ void Worker::initialize(){
 }
 
 void Worker::handleSetId(SetId *msg){
-    id = msg->getWorkerId();
+    id = msg->id;
 }
 
 void Worker::handlePing(){
     if(!failed){
         Pong *msg = new Pong();
-        msg->setWorkerId(id);
+        msg->workerId = id;
         send(msg,"port");
     }
 }
@@ -49,8 +49,8 @@ void Worker::handleExecuteTask(ExecuteTask *msg){
             scheduleAt(simTime()+par("recovery"),new Recovery());
             return;
         }
-        vector<pair<int,int>> chunk = msg->getChunk();
-        pair<string,int> op = msg->getOp();
+        vector<pair<int,int>> chunk = msg->chunk;
+        pair<string,int> op = msg->op;
 
         executeOperation(chunk,op);
         scheduleAt(simTime()+par("exec"),new ExecutionTime());
@@ -59,14 +59,14 @@ void Worker::handleExecuteTask(ExecuteTask *msg){
 
 void Worker::handleExecutionTime(){
     TaskCompleted *msg;
-    msg->setWorkerId(id);
-    msg->setResult(result);
+    msg->workerId = id;
+    msg->result = result;
     send(msg,"port");
 }
 
 void Worker::handleRecovery(){
     BackOnline *msg;
-    msg->setWorkerId(id);
+    msg->workerId = id;
     send(msg,"port");
 }
 

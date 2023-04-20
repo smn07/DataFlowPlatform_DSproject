@@ -12,7 +12,7 @@ simple Worker{
         inout port;
 }
 
-simple coordinator{
+simple Coordinator{
     parameters:
         int timeout = uniform(250ms,400ms);
     gates:

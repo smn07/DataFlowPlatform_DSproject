@@ -1,5 +1,5 @@
 #include <omnetpp.h>
-#include <messages.cpp>
+#include "messages.cpp"
 
 using namespace omnetpp;
 using namespace std;
@@ -58,14 +58,14 @@ void Worker::handleExecuteTask(ExecuteTask *msg){
 }
 
 void Worker::handleExecutionTime(){
-    TaskCompleted *msg;
+    TaskCompleted *msg = new TaskCompleted();
     msg->setWorkerId(id);
     msg->setResult(result);
     send(msg,"port");
 }
 
 void Worker::handleRecovery(){
-    BackOnline *msg;
+    BackOnline *msg = new BackOnline();
     msg->setWorkerId(id);
     send(msg,"port");
 }
@@ -139,22 +139,30 @@ void Worker::executeOperation(vector<pair<int,int>> chunk, pair<string,int> op){
 }
 
 void Worker::handleMessage(cMessage *msg){
-    switch (msg->getKind())
-    {
-    case SetId:
-        handleSetId(msg);
-        break;
-    case Ping:
-        handlePing(msg);
-        break;
-    case ExecuteTask:
-        handleExecuteTask(msg);
-        break;
-    case ExecutionTime:
-        handleExecutionTime();
-        break;
-    case Recovery:
-        handleRecovery();
-        break;
+    SetId* setidmsg = dynamic_cast<SetId*>(msg);
+    if(setidmsg!=nullptr){
+        handleSetId(setidmsg);
+    } else {
+        Ping* pingmsg = dynamic_cast<Ping*>(msg);
+        if (pingmsg!=nullptr){
+            handlePing();
+        } else {
+            ExecuteTask* executetaskmsg = dynamic_cast<ExecuteTask*>(msg);
+            if(executetaskmsg!=nullptr){
+                handleExecuteTask(executetaskmsg);
+            } else {
+                Recovery* recoverymsg = dynamic_cast<Recovery*>(msg);
+                if(recoverymsg!=nullptr){
+                    handleRecovery();
+                } else {
+                    ExecutionTime* executiontimemsg = dynamic_cast<ExecutionTime*>(msg);
+                    if(executiontimemsg!=nullptr){
+                        handleExecutionTime();
+                    } else {
+                        throw invalid_argument("coordinator recieved invalid message type");
+                    }
+                }
+            }
+        }
     }
 }

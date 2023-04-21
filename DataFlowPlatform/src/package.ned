@@ -3,7 +3,8 @@ package dataflowplatform;
 @license(LGPL);
 
 
-simple Worker{
+simple Worker
+{
     parameters:
         int failure = uniform(1,9);
         int recovery = uniform(500ms,750ms);
@@ -12,25 +13,31 @@ simple Worker{
         inout port;
 }
 
-simple Coordinator{
+simple Coordinator
+{
     parameters:
         int timeout = uniform(250ms,400ms);
     gates:
         inout ports[];
 }
 
-channel TCPChannel extends ned.DelayChannel{
-    delay=uniform(100ms,150ms);
+channel TCPChannel extends ned.DelayChannel
+{
+    delay = uniform(100ms,150ms);
 }
 
-network dataflowPlatform{
+network dataflowPlatform
+{
     parameters:
         int workerNumber = default(10);
+        @display("bgb=628,249");
     submodules:
         workers[workerNumber]: Worker;
-        coordinator: Coordinator;
+        coordinator: Coordinator {
+            @display("p=284,50");
+        }
     connections:
-        for i=0..workerNumber-1{
+        for i=0..workerNumber-1 {
             workers[i].port <--> TCPChannel <--> coordinator.ports++;
         }
 }

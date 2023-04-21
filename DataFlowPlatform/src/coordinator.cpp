@@ -173,8 +173,8 @@ int Coordinator::getFreeWorker(){
         if (worker.online && worker.op == pair<int,int>{-1,0}){
             return worker.workerId;
         }
-        return -1;
     }
+    return -1;
 }
 
 void Coordinator::handleTaskCompleted(TaskCompleted *msg){
@@ -267,19 +267,25 @@ void Coordinator::handleBackOnline(BackOnline *msg){
 }
 
 void Coordinator::handleMessage(cMessage *msg){
-    switch (msg->getKind())
-    {
-    case TaskCompleted:
-        handleTaskCompleted(msg);
-        break;
-    case Pong:
-        handlePong(msg);
-        break;
-    case PingTimeout:
-        handlePingTimeout(msg);
-        break;
-    case BackOnline:
-        handleBackOnline(msg);
-        break;
+    TaskCompleted* taskmsg = dynamic_cast<TaskCompleted*>(msg);
+    if(taskmsg!=nullptr){
+        handleTaskCompleted(taskmsg);
+    } else {
+        Pong* pongmsg = dynamic_cast<Pong*>(msg);
+        if (pongmsg!=nullptr){
+            handlePong(pongmsg);
+        } else {
+            PingTimeout* pingtimeoutmsg = dynamic_cast<PingTimeout*>(msg);
+            if(pingtimeoutmsg!=nullptr){
+                handlePingTimeout(pingtimeoutmsg);
+            } else {
+                BackOnline* backonlinemsg = dynamic_cast<BackOnline*>(msg);
+                if(backonlinemsg!=nullptr){
+                    handleBackOnline(backonlinemsg);
+                } else {
+                    throw invalid_argument("coordinator recieved invalid message type");
+                }
+            }
+        }
     }
 }

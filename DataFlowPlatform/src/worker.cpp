@@ -25,9 +25,11 @@ class Worker: public cSimpleModule{
 
 };
 
+Define_Module(Worker);
+
 void Worker::initialize(){
     failed = false;
-    failProb = par("failure");
+    failProb = par("failure").intValue();
 }
 
 void Worker::handleSetId(SetId *msg){

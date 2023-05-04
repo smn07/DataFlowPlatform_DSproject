@@ -6,9 +6,9 @@ package dataflowplatform;
 simple Worker
 {
     parameters:
-        int failure = uniform(1,9);
-        int recovery = uniform(500ms,750ms);
-        int exec = uniform(100ms,250ms);
+        double recovery @unit(ms) = uniform(500ms,750ms);
+        double exec @unit(ms) = uniform(100ms,250ms);
+        int failure =  intuniform(1,9);
     gates:
         inout port;
 }
@@ -16,7 +16,7 @@ simple Worker
 simple Coordinator
 {
     parameters:
-        int timeout = uniform(250ms,400ms);
+        double timeout @unit(ms)= uniform(250ms,400ms);
     gates:
         inout ports[];
 }

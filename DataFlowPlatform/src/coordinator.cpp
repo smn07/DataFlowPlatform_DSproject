@@ -54,6 +54,8 @@ class Coordinator: public cSimpleModule{
         int workerNumber;
 };
 
+Define_Module(Coordinator);
+
 void Coordinator::initialize(){
     parseInput();
     setup();
@@ -79,6 +81,14 @@ void Coordinator::parseInput(){
             reduceTask = pair<string,int>{inputProgram[sectionKey].getMemberNames()[0],-1};
         }
     }
+
+    //decoding alternativo
+    chunkNumber = inputProgram["chunks"].asInt();
+    Json::Value map = inputProgram["Map"];
+    for(auto& inputPair : map){
+        mapTaskQueue.push_back(pair<string,int>{inputPair.getMemberNames()[0],inputPair.asInt()});
+    }
+    reduceTask = pair<string,int>{inputProgram["Reduce"].getMemberNames()[0],-1};
 
     //fill currentTaskQueue
     for(int i=0;i<chunkNumber;i++){

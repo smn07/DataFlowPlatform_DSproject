@@ -1,3 +1,0 @@
-package prova;
-
-@license(LGPL);

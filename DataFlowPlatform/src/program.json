@@ -259,8 +259,6 @@
             "ADD": "7"
         }
     ],
-    "Reduce": {
-        "REDUCESUB": "NULL"
-    },
+    "Reduce":"REDUCESUB",
     "Chunks": 21
 }

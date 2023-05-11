@@ -34,6 +34,7 @@ void Worker::initialize(){
 
 void Worker::handleSetId(SetId *msg){
     id = msg->getWorkerId();
+    EV << id << endl;
 }
 
 void Worker::handlePing(){

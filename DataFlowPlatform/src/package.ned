@@ -16,6 +16,7 @@ simple Worker
 simple Coordinator
 {
     parameters:
+        int workerNumber = default(10);
         double timeout @unit(ms)= uniform(250ms,400ms);
     gates:
         inout ports[];

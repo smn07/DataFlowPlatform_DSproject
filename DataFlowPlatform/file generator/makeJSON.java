@@ -15,9 +15,8 @@ public class makeJSON {
             System.out.print(",{\"" + opMap[s] + "\":\"" + r + "\"}");       
         } 
         System.out.print("]");   
-        System.out.print(",\"Reduce\":");
         int s = ThreadLocalRandom.current().nextInt(0, 3);
-        System.out.print("{\"" + opReduce[s] + "\":\"NULL\"}");  
+        System.out.print(",\"Reduce\": " + opReduce[s]);
         System.out.print(",\"Chunks\":");
         int d = ThreadLocalRandom.current().nextInt(10, 30);
         System.out.print(d +"}");                    

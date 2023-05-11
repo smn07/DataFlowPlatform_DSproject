@@ -7,7 +7,7 @@ simple Worker
 {
     parameters:
         double recovery @unit(ms) = uniform(500ms,750ms);
-        double exec @unit(ms) = uniform(100ms,250ms);
+        double exec @unit(ms) = uniform(10ms,25ms);
         int failure =  intuniform(1,9);
     gates:
         inout port;

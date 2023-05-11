@@ -58,15 +58,12 @@ Define_Module(Coordinator);
 
 void Coordinator::initialize(){
     parseInput();
-    //setup();
-    //assignTask();
+    setup();
+    assignTask();
 }
 
 void Coordinator::parseInput(){
 
-    cout << "\nParsing\n" << endl;
-
-    // Read the JSON file
     // Read the JSON file
     ifstream file("program.json");
     if (!file.is_open()) {
@@ -103,33 +100,6 @@ void Coordinator::parseInput(){
     auto reduce = root["Reduce"].asString();
     reduceTask = pair<string,int>{reduce,-1};
 
-    /*//read JSON and fill taskQueue, also read number of chunks
-    Json::Value inputProgram;
-    ifstream program_file("program.json", ifstream::binary);
-    program_file >> inputProgram;
-
-    //lettura array
-    //decoding col foreach
-    for(auto& sectionKey : inputProgram.getMemberNames()){
-        if (sectionKey == "chunks"){
-            chunkNumber = inputProgram[sectionKey].asInt();
-        } else if (sectionKey == "Map") {
-            for(auto& inputPair : inputProgram[sectionKey]){
-                mapTaskQueue.push_back(pair<string,int>{inputPair.getMemberNames()[0],inputPair.asInt()});
-            }
-        } else {
-            reduceTask = pair<string,int>{inputProgram[sectionKey].getMemberNames()[0],-1};
-        }
-    }
-
-    //decoding alternativo
-    chunkNumber = inputProgram["chunks"].asInt();
-    Json::Value map = inputProgram["Map"];
-    for(auto& inputPair : map){
-        mapTaskQueue.push_back(pair<string,int>{inputPair.getMemberNames()[0],inputPair.asInt()});
-    }
-    reduceTask = pair<string,int>{inputProgram["Reduce"].getMemberNames()[0],-1};*/
-
     //fill currentTaskQueue
     for(int i=0;i<chunkNumber;i++){
         currentTaskQueue.push(pair<bool,pair<int,int>>{false,pair<int,int>{i,0}});
@@ -152,7 +122,6 @@ void Coordinator::parseInput(){
         while (getline(ss, field, ',')) {
             fields.push_back(field);
         }
-        cout << fields[0] << " , " << fields[1] << endl;
         // Add the fields to the data vector
         data.push_back(fields);
     }
@@ -160,8 +129,13 @@ void Coordinator::parseInput(){
     // fill globaldata
     int i = 0;
     for (const auto& fields : data) {
-        cout << i << endl;
-        globalData[i%chunkNumber].push_back(pair<int,int>{stoi(fields[0]),stoi(fields[1])});
+        if(i<chunkNumber){
+            vector<pair<int,int>> tmp;
+            tmp.push_back(pair<int,int>{stoi(fields[0]),stoi(fields[1])});
+            globalData.push_back(tmp);
+        } else {
+            globalData[i%chunkNumber].push_back(pair<int,int>{stoi(fields[0]),stoi(fields[1])});
+        }
         i++;
    }
 }
@@ -169,8 +143,10 @@ void Coordinator::parseInput(){
 void Coordinator::setup(){
 
     workerNumber = par("workerNumber");
+    for(int i=0; i<workerNumber; i++){
+        timeoutId.push_back(nullptr);
+    }
 
-    EV << workerNumber << endl;
     cout << workerNumber << endl;
 
     /*WorkersData array definition*/
@@ -185,7 +161,6 @@ void Coordinator::setup(){
         send(setmsg, "ports$o",i);
     }
 
-    //DA QUA DA UN SEG FAULT
     /*Manda il primo ping ad ogni worker e schedula il timeout*/
     for(int i=0; i<workerNumber; i++){
         Ping *pingmsg = new Ping();
@@ -219,7 +194,7 @@ void Coordinator::assignTask(){
             workersData[freeWorker].op = currentTask.second;
         }
         
-        send(msg,"ports",freeWorker);
+        send(msg,"ports$o",freeWorker);
         freeWorker = getFreeWorker(); 
     }
 }
@@ -298,8 +273,13 @@ bool Coordinator::chunksDone(){
 void Coordinator::handlePong(Pong *msg){
     int id=msg->getWorkerId();
     if(workersData[id].online){
-        delete timeoutId[id]; 
-        send(new Ping(), "ports",id);
+        try{
+            cancelAndDelete(timeoutId[id]);
+        } catch (const cRuntimeError e){
+            drop(timeoutId[id]);
+            delete timeoutId[id];
+        }
+        send(new Ping(), "ports$o",id);
         PingTimeout *timeoutmsg = new PingTimeout();
         timeoutmsg->setWorkerId(id);
         timeoutId[id] = timeoutmsg;

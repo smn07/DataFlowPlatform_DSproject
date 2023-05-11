@@ -63,6 +63,9 @@ class PingTimeout: public cMessage{
         int getWorkerId(){
             return workerId;
         }
+        /*~PingTimeout(){
+            drop();
+        }*/
 };
 
 class Pong: public cMessage{

@@ -41,21 +41,24 @@ void Worker::handlePing(){
     if(!failed){
         Pong *msg = new Pong();
         msg->setWorkerId(id);
-        send(msg,"port");
+        send(msg,"port$o");
     }
 }
 
 void Worker::handleExecuteTask(ExecuteTask *msg){
     if(!failed){
         if(rand()%(10-failProb) == 0){
+            cout << "worker " << id << " failed" << endl;
             failed = true;
             scheduleAt(simTime()+par("recovery"),new Recovery());
             return;
         }
+        cout << "worker " << id << " executing task" << endl;
         vector<pair<int,int>> chunk = msg->getChunk();
         pair<string,int> op = msg->getOp();
 
         executeOperation(chunk,op);
+        cout << "worker " << id << " scheduling execution time" << endl;
         scheduleAt(simTime()+par("exec"),new ExecutionTime());
     }
 }
@@ -64,13 +67,14 @@ void Worker::handleExecutionTime(){
     TaskCompleted *msg = new TaskCompleted();
     msg->setWorkerId(id);
     msg->setResult(result);
-    send(msg,"port");
+    cout << "worker " << id << " sending task completed" << endl;
+    send(msg,"port$o");
 }
 
 void Worker::handleRecovery(){
     BackOnline *msg = new BackOnline();
     msg->setWorkerId(id);
-    send(msg,"port");
+    send(msg,"port$o");
 }
 
 void Worker::executeOperation(vector<pair<int,int>> chunk, pair<string,int> op){
@@ -139,6 +143,7 @@ void Worker::executeOperation(vector<pair<int,int>> chunk, pair<string,int> op){
             }
         }
     }
+    cout << "worker " << id << " exeuction done" << endl;
 }
 
 void Worker::handleMessage(cMessage *msg){

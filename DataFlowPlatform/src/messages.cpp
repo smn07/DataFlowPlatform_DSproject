@@ -15,6 +15,18 @@ class Ping: public cMessage{
         }
 };
 
+class SendPing: public cMessage{
+    private:
+        int workerId;
+    public:
+        void setWorkerId(int par){
+            workerId = par;
+        }
+        int getWorkerId(){
+            return workerId;
+        }
+};
+
 class ExecuteTask: public cMessage{
     private:
         vector<pair<int,int>> chunk;

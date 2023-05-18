@@ -8,7 +8,7 @@ simple Worker
     parameters:
         double recovery @unit(ms) = uniform(500ms,750ms);
         double exec @unit(ms) = uniform(10ms,25ms);
-        int failure =  intuniform(1,9);
+        double failure =  default(10);
     gates:
         inout port;
 }
@@ -18,6 +18,7 @@ simple Coordinator
     parameters:
         int workerNumber = default(10);
         double timeout @unit(ms)= uniform(250ms,400ms);
+        double pingInterval @unit(ms) = uniform(100ms,150ms);
     gates:
         inout ports[];
 }

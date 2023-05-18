@@ -11,7 +11,7 @@ class Worker: public cSimpleModule{
    private:
         int id;
         bool failed;
-        int failProb;
+        double failProb;
         vector<pair<int,int>> result;
 
         virtual void initialize() override;
@@ -29,7 +29,7 @@ Define_Module(Worker);
 
 void Worker::initialize(){
     failed = false;
-    failProb = par("failure").intValue();
+    failProb = par("failure").doubleValue();
 }
 
 void Worker::handleSetId(SetId *msg){
@@ -47,19 +47,18 @@ void Worker::handlePing(){
 
 void Worker::handleExecuteTask(ExecuteTask *msg){
     if(!failed){
-        if(rand()%(10-failProb) == 0){
-            cout << "worker " << id << " failed" << endl;
+        if(uniform(0,100) < failProb){
             failed = true;
-            scheduleAt(simTime()+par("recovery"),new Recovery());
+            scheduleAfter(par("recovery"),new Recovery());
+            bubble("Node Failed");
             return;
         }
-        cout << "worker " << id << " executing task" << endl;
         vector<pair<int,int>> chunk = msg->getChunk();
         pair<string,int> op = msg->getOp();
 
         executeOperation(chunk,op);
-        cout << "worker " << id << " scheduling execution time" << endl;
-        scheduleAt(simTime()+par("exec"),new ExecutionTime());
+        ExecutionTime *endmsg = new ExecutionTime();
+        scheduleAfter(par("exec"),endmsg);
     }
 }
 
@@ -67,7 +66,6 @@ void Worker::handleExecutionTime(){
     TaskCompleted *msg = new TaskCompleted();
     msg->setWorkerId(id);
     msg->setResult(result);
-    cout << "worker " << id << " sending task completed" << endl;
     send(msg,"port$o");
 }
 
@@ -75,10 +73,12 @@ void Worker::handleRecovery(){
     BackOnline *msg = new BackOnline();
     msg->setWorkerId(id);
     send(msg,"port$o");
+    bubble("Node Back Online");
 }
 
 void Worker::executeOperation(vector<pair<int,int>> chunk, pair<string,int> op){
-    pair<int,int> res;
+    pair<int,int> res = pair<int,int>{0,0};
+    result.clear();
     if(op.first=="ADD"){
         for(pair<int,int> pair : chunk){
             res.first = pair.first;
@@ -111,11 +111,12 @@ void Worker::executeOperation(vector<pair<int,int>> chunk, pair<string,int> op){
             if(pair.first == res.first){
                 res.second += pair.second;
             } else {
-                result.push_back(res);
+                result.push_back(::pair<int,int>{res.first,res.second});
                 res.first = pair.first;
                 res.second = pair.second;
             }
         }
+        result.push_back(::pair<int,int>{res.first,res.second});
     } else if (op.first=="REDUCESUB"){
         //SUB
         res.first = chunk.front().first;
@@ -124,11 +125,17 @@ void Worker::executeOperation(vector<pair<int,int>> chunk, pair<string,int> op){
             if(pair.first == res.first){
                 res.second -= pair.second;
             } else {
-                result.push_back(res);
+                result.push_back(::pair<int,int>{res.first,res.second});
                 res.first = pair.first;
                 res.second = pair.second;
             }
         }
+        result.push_back(::pair<int,int>{res.first,res.second});
+        /*
+        cout << "reduce done results:" << endl;
+        for(auto& elem : result){
+            cout << elem.first << " , " << elem.second << endl;
+        }*/
     } else if (op.first=="REDUCEMUL"){
         //MUL
         res.first = chunk.front().first;
@@ -137,13 +144,13 @@ void Worker::executeOperation(vector<pair<int,int>> chunk, pair<string,int> op){
             if(pair.first == res.first){
                 res.second *= pair.second;
             } else {
-                result.push_back(res);
+                result.push_back(::pair<int,int>{res.first,res.second});
                 res.first = pair.first;
                 res.second = pair.second;
             }
         }
+        result.push_back(::pair<int,int>{res.first,res.second});
     }
-    cout << "worker " << id << " exeuction done" << endl;
 }
 
 void Worker::handleMessage(cMessage *msg){

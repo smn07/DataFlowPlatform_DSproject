@@ -58,7 +58,10 @@ void Worker::handleExecuteTask(ExecuteTask *msg){
 
         executeOperation(chunk,op);
         ExecutionTime *endmsg = new ExecutionTime();
-        scheduleAfter(par("exec"),endmsg);
+        double execTime = par("exec");
+        scheduleAfter(execTime*chunk.size(),endmsg);
+    } else {
+        scheduleAfter(par("recovery"),new Recovery());
     }
 }
 
@@ -92,9 +95,17 @@ void Worker::executeOperation(vector<pair<int,int>> chunk, pair<string,int> op){
             result.push_back(res);
         }
     } else if (op.first=="DIV"){
+        res = pair<int,int>{0,1};
         for(pair<int,int> pair : chunk){
             res.first = pair.first;
             res.second = pair.second / op.second;
+            result.push_back(res);
+        }
+    } else if (op.first=="MUL"){
+        res = pair<int,int>{0,1};
+        for(pair<int,int> pair : chunk){
+            res.first = pair.first;
+            res.second = pair.second * op.second;
             result.push_back(res);
         }
     } else if (op.first=="CHANGEKEY"){
@@ -131,11 +142,6 @@ void Worker::executeOperation(vector<pair<int,int>> chunk, pair<string,int> op){
             }
         }
         result.push_back(::pair<int,int>{res.first,res.second});
-        /*
-        cout << "reduce done results:" << endl;
-        for(auto& elem : result){
-            cout << elem.first << " , " << elem.second << endl;
-        }*/
     } else if (op.first=="REDUCEMUL"){
         //MUL
         res.first = chunk.front().first;

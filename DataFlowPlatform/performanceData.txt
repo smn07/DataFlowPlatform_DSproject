@@ -1,0 +1,57 @@
+1. Number of workers
+    Network: 200 pairs, 4 map, 10% failure, 14 chunks
+    5 workers: ET 2778, M 308
+    10 workers: ET 1514, M 491
+    14 workers: ET 1411, M 682
+    16 workers: ET 1700, M 818
+    20 workers: ET 4454, M 315
+
+2. Number of operations
+    Network: 200 pairs, 10% failure, 14 chunks, 14 workers
+    1 Map: ET 752, M 357
+    2 Map: ET 1099, M 498
+    4 Map: ET 1411, M 682
+    5 Map: ET 5653, M 334  
+    6 Map: ET 3210, M 1032 
+    8 Map: ET 8556, M 442 
+
+3. Number of input pairs
+    Network:  4 map, 10% failure, 14 chunks, 14 workers
+    50 pairs: ET 2817, M 272 
+    100 pairs: ET 1366, M 652
+    200 pairs: ET 1369, M 652
+    500 pairs: ET 1376, M 652
+    1000 pairs: ET 1379, M 652  
+
+4. Failure probability
+    Network:  200 pairs, 4 map, 14 chunks, 14 workers
+    1% failure: ET 19, M 252
+    5% failure: ET 3572, M 262
+    10% failure: ET 3171, M 1134
+    20% failure: ET 6261, M 950 
+    50% failure: ET , M 
+
+5. Number of chunks
+
+ExecutionTime: ET
+Messages: M
+
+reference JSON 
+{
+    "Map": [
+        {
+            "ADD": "2"
+        },
+        {
+            "MUL": "16"
+        },
+        {
+            "SUB": "19"
+        },
+        {
+            "DIV": "8"
+        }
+    ],
+    "Reduce": "REDUCEADD",
+    "Chunks": 14
+}

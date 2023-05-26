@@ -2,8 +2,17 @@
     "Map": [
         {
             "ADD": "2"
+        },
+        {
+            "MUL": "16"
+        },
+        {
+            "SUB": "19"
+        },
+        {
+            "DIV": "8"
         }
     ],
-    "Reduce": "REDUCESUB",
-    "Chunks": 20
+    "Reduce": "REDUCEADD",
+    "Chunks": 14
 }

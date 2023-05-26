@@ -8,7 +8,7 @@ public class makeJSON {
         System.out.print("{");   
         System.out.print("\"Map\":[");  
         System.out.print("{\"ADD\":\"2\"}");   
-        int n = ThreadLocalRandom.current().nextInt(10, 11);
+        int n = ThreadLocalRandom.current().nextInt(3, 4);
         for(int i=0;i<n;i++){
             int s = ThreadLocalRandom.current().nextInt(0, 11);
             int r = ThreadLocalRandom.current().nextInt(1, 20);

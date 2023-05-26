@@ -57,13 +57,16 @@ class Coordinator: public cSimpleModule{
         int chunkNumber;
         //numero di worker
         int workerNumber;
-        //program finisched
+        //program finished
         bool finished;
+
+        simtime_t startTime;
 };
 
 Define_Module(Coordinator);
 
 void Coordinator::initialize(){
+    startTime = simTime();
     parseInput();
     setup();
     assignTask();
@@ -195,11 +198,6 @@ void Coordinator::assignTask(){
         ExecuteTask *msg = new ExecuteTask();
         if (currentTask.first){
             //Se stiamo schedulando una reduce leggiamo da reduce data altrimenti leggiamo da globalData
-            cout << "scheduling on chunk " << currentTask.second.first << endl;
-            for(auto e : reduceData[currentTask.second.first]){
-                cout << e.first << " , " << e.second << endl;
-            }
-            cout << "end chunk " << endl;
             msg->setChunk(reduceData[currentTask.second.first]);
             msg->setOp(reduceTask);
             workersData[freeWorker].op = pair<int,int>{currentTask.second.first,-1};//il -1 indica che è una reduce
@@ -208,7 +206,6 @@ void Coordinator::assignTask(){
             msg->setOp(mapTaskQueue[currentTask.second.second]);
             workersData[freeWorker].op = currentTask.second;
         }
-        //cout << "scheduling task " << currentTask.second.second << " on chunk " << currentTask.second.first << endl;
         send(msg,"ports$o",freeWorker);
         freeWorker = getFreeWorker(); 
     }
@@ -229,7 +226,6 @@ bool Coordinator::comparePairs(const pair<int,int>& a, const pair<int,int>& b) {
 
 void Coordinator::handleTaskCompleted(TaskCompleted *msg){
     int workerId = msg->getWorkerId();
-
     if(workersData[workerId].online){
         //update worker status
         pair<int,int> taskCompleted = workersData[workerId].op;
@@ -239,7 +235,11 @@ void Coordinator::handleTaskCompleted(TaskCompleted *msg){
             reduceData[taskCompleted.first] = msg->getResult();
         } else {
             //sovrascriviamo globalData
-            globalData[taskCompleted.first] = msg->getResult();
+            auto res = msg->getResult();
+            globalData[taskCompleted.first].clear();
+            for(auto respair : res){
+                globalData[taskCompleted.first].push_back(pair<int,int>{respair.first,respair.second});
+            }
         }
         chunkDone[taskCompleted.first] = true;
 
@@ -282,6 +282,8 @@ void Coordinator::handleTaskCompleted(TaskCompleted *msg){
             }
             //if the queue is empty but we are still processing some chunks we wait the next completion
         }
+    } else {
+        cout << "completion recieved from failed node" << endl;
     }
 }
 
@@ -322,15 +324,22 @@ void Coordinator::handlePingTimeout(PingTimeout *msg){
     int id = msg->getWorkerId();
     timeoutId[id] = 0;
     workersData[id].online = false;
-    pair<int,int> failedTask = workersData[id].op;
-    workersData[id].op = pair<int,int>{-1,0};
-    currentTaskQueue.push(pair<bool,pair<int,int>>{failedTask.second==-1?true:false,pair<int,int>{failedTask.first,failedTask.second}});
+    if(workersData[id].op.first != -1){
+        pair<int,int> failedTask = pair<int,int>{workersData[id].op.first,workersData[id].op.second};
+        workersData[id].op = pair<int,int>{-1,0};
+        currentTaskQueue.push(pair<bool,pair<int,int>>{failedTask.second==-1?true:false,failedTask});
+        assignTask();
+    }
 }
 
 void Coordinator::handleBackOnline(BackOnline *msg){
     int id = msg->getWorkerId();
     workersData[id].online = true;
-    //start ping again
+    send(new Ping(), "ports$o",id);
+    PingTimeout *timeoutmsg = new PingTimeout();
+    timeoutmsg->setWorkerId(id);
+    timeoutId[id] = timeoutmsg;
+    scheduleAfter(par("timeout"),timeoutmsg);
     assignTask();
 }
 
@@ -386,6 +395,10 @@ void Coordinator::endProgram(){
 
     std::cout << "Pairs have been written to the file." << std::endl;
 
+    simtime_t endTime = simTime();
+    cout << "Total simTime " << startTime-endTime << endl;
+
+    endSimulation();
     return;
 }
 

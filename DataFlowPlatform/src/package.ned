@@ -8,7 +8,7 @@ simple Worker
     parameters:
         double recovery @unit(ms) = uniform(500ms,750ms);
         double exec @unit(ms) = uniform(10ms,25ms);
-        double failure =  default(10);
+        double failure =  default(20);
     gates:
         inout port;
 }
@@ -16,9 +16,9 @@ simple Worker
 simple Coordinator
 {
     parameters:
-        int workerNumber = default(10);
-        double timeout @unit(ms)= uniform(250ms,400ms);
-        double pingInterval @unit(ms) = uniform(100ms,150ms);
+        int workerNumber = default(14);
+        double timeout @unit(ms)= 300ms;
+        double pingInterval @unit(ms) = 125ms;
     gates:
         inout ports[];
 }
@@ -31,7 +31,7 @@ channel TCPChannel extends ned.DelayChannel
 network dataflowPlatform
 {
     parameters:
-        int workerNumber = default(10);
+        int workerNumber = default(14);
         @display("bgb=628,249");
     submodules:
         workers[workerNumber]: Worker;

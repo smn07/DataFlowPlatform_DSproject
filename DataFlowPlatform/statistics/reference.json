@@ -11,6 +11,9 @@
         },
         {
             "DIV": "8"
+        },
+        {
+            "ADD": "10"
         }
     ],
     "Reduce": "REDUCEADD",

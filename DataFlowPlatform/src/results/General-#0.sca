@@ -1,8 +1,8 @@
 version 3
-run General-0-20230527-19:25:50-37709
+run General-0-20230528-20:00:02-43238
 attr configname General
-attr datetime 20230527-19:25:50
-attr datetimef 20230527-192550
+attr datetime 20230528-20:00:02
+attr datetimef 20230528-200002
 attr experiment General
 attr inifile omnetpp.ini
 attr iterationvars ""
@@ -10,22 +10,22 @@ attr iterationvarsd ""
 attr iterationvarsf ""
 attr measurement ""
 attr network dataflowplatform.dataflowPlatform
-attr processid 37709
+attr processid 43238
 attr repetition 0
 attr replication #0
 attr resultdir results
 attr runnumber 0
 attr seedset 0
 config network dataflowplatform.dataflowPlatform
-config **.workerNumber 20
+config **.workerNumber 10
 config **.coordinator.timeout 300ms
 config **.coordinator.pingInterval 200ms
 config **.workers*.recovery 650ms
 config **.workers*.exec 1ms
-config **.workers*.failure 10
+config **.workers*.failure 20
 
-scalar dataflowPlatform.coordinator "simulation time" 924.10071387504
-scalar dataflowPlatform.coordinator messageNumber 221
+scalar dataflowPlatform.coordinator "simulation time" 4090.441613034
+scalar dataflowPlatform.coordinator messageNumber 341
 par dataflowPlatform.workers[0].port$o.channel typename "\"dataflowplatform.TCPChannel\""
 par dataflowPlatform.workers[0].port$o.channel disabled false
 attr mutable ""
@@ -146,252 +146,72 @@ attr mutable ""
 par dataflowPlatform.coordinator.ports$o[9].channel delay 0.0123883s
 attr mutable ""
 attr unit s
-par dataflowPlatform.workers[10].port$o.channel typename "\"dataflowplatform.TCPChannel\""
-par dataflowPlatform.workers[10].port$o.channel disabled false
-attr mutable ""
-par dataflowPlatform.workers[10].port$o.channel delay 0.0139586s
-attr mutable ""
-attr unit s
-par dataflowPlatform.coordinator.ports$o[10].channel typename "\"dataflowplatform.TCPChannel\""
-par dataflowPlatform.coordinator.ports$o[10].channel disabled false
-attr mutable ""
-par dataflowPlatform.coordinator.ports$o[10].channel delay 0.0140608s
-attr mutable ""
-attr unit s
-par dataflowPlatform.workers[11].port$o.channel typename "\"dataflowplatform.TCPChannel\""
-par dataflowPlatform.workers[11].port$o.channel disabled false
-attr mutable ""
-par dataflowPlatform.workers[11].port$o.channel delay 0.0126445s
-attr mutable ""
-attr unit s
-par dataflowPlatform.coordinator.ports$o[11].channel typename "\"dataflowplatform.TCPChannel\""
-par dataflowPlatform.coordinator.ports$o[11].channel disabled false
-attr mutable ""
-par dataflowPlatform.coordinator.ports$o[11].channel delay 0.0123999s
-attr mutable ""
-attr unit s
-par dataflowPlatform.workers[12].port$o.channel typename "\"dataflowplatform.TCPChannel\""
-par dataflowPlatform.workers[12].port$o.channel disabled false
-attr mutable ""
-par dataflowPlatform.workers[12].port$o.channel delay 0.0128402s
-attr mutable ""
-attr unit s
-par dataflowPlatform.coordinator.ports$o[12].channel typename "\"dataflowplatform.TCPChannel\""
-par dataflowPlatform.coordinator.ports$o[12].channel disabled false
-attr mutable ""
-par dataflowPlatform.coordinator.ports$o[12].channel delay 0.0119639s
-attr mutable ""
-attr unit s
-par dataflowPlatform.workers[13].port$o.channel typename "\"dataflowplatform.TCPChannel\""
-par dataflowPlatform.workers[13].port$o.channel disabled false
-attr mutable ""
-par dataflowPlatform.workers[13].port$o.channel delay 0.014628s
-attr mutable ""
-attr unit s
-par dataflowPlatform.coordinator.ports$o[13].channel typename "\"dataflowplatform.TCPChannel\""
-par dataflowPlatform.coordinator.ports$o[13].channel disabled false
-attr mutable ""
-par dataflowPlatform.coordinator.ports$o[13].channel delay 0.0141804s
-attr mutable ""
-attr unit s
-par dataflowPlatform.workers[14].port$o.channel typename "\"dataflowplatform.TCPChannel\""
-par dataflowPlatform.workers[14].port$o.channel disabled false
-attr mutable ""
-par dataflowPlatform.workers[14].port$o.channel delay 0.0103552s
-attr mutable ""
-attr unit s
-par dataflowPlatform.coordinator.ports$o[14].channel typename "\"dataflowplatform.TCPChannel\""
-par dataflowPlatform.coordinator.ports$o[14].channel disabled false
-attr mutable ""
-par dataflowPlatform.coordinator.ports$o[14].channel delay 0.011687s
-attr mutable ""
-attr unit s
-par dataflowPlatform.workers[15].port$o.channel typename "\"dataflowplatform.TCPChannel\""
-par dataflowPlatform.workers[15].port$o.channel disabled false
-attr mutable ""
-par dataflowPlatform.workers[15].port$o.channel delay 0.0104356s
-attr mutable ""
-attr unit s
-par dataflowPlatform.coordinator.ports$o[15].channel typename "\"dataflowplatform.TCPChannel\""
-par dataflowPlatform.coordinator.ports$o[15].channel disabled false
-attr mutable ""
-par dataflowPlatform.coordinator.ports$o[15].channel delay 0.0132409s
-attr mutable ""
-attr unit s
-par dataflowPlatform.workers[16].port$o.channel typename "\"dataflowplatform.TCPChannel\""
-par dataflowPlatform.workers[16].port$o.channel disabled false
-attr mutable ""
-par dataflowPlatform.workers[16].port$o.channel delay 0.0101011s
-attr mutable ""
-attr unit s
-par dataflowPlatform.coordinator.ports$o[16].channel typename "\"dataflowplatform.TCPChannel\""
-par dataflowPlatform.coordinator.ports$o[16].channel disabled false
-attr mutable ""
-par dataflowPlatform.coordinator.ports$o[16].channel delay 0.0118412s
-attr mutable ""
-attr unit s
-par dataflowPlatform.workers[17].port$o.channel typename "\"dataflowplatform.TCPChannel\""
-par dataflowPlatform.workers[17].port$o.channel disabled false
-attr mutable ""
-par dataflowPlatform.workers[17].port$o.channel delay 0.0141631s
-attr mutable ""
-attr unit s
-par dataflowPlatform.coordinator.ports$o[17].channel typename "\"dataflowplatform.TCPChannel\""
-par dataflowPlatform.coordinator.ports$o[17].channel disabled false
-attr mutable ""
-par dataflowPlatform.coordinator.ports$o[17].channel delay 0.0147858s
-attr mutable ""
-attr unit s
-par dataflowPlatform.workers[18].port$o.channel typename "\"dataflowplatform.TCPChannel\""
-par dataflowPlatform.workers[18].port$o.channel disabled false
-attr mutable ""
-par dataflowPlatform.workers[18].port$o.channel delay 0.0138908s
-attr mutable ""
-attr unit s
-par dataflowPlatform.coordinator.ports$o[18].channel typename "\"dataflowplatform.TCPChannel\""
-par dataflowPlatform.coordinator.ports$o[18].channel disabled false
-attr mutable ""
-par dataflowPlatform.coordinator.ports$o[18].channel delay 0.0107018s
-attr mutable ""
-attr unit s
-par dataflowPlatform.workers[19].port$o.channel typename "\"dataflowplatform.TCPChannel\""
-par dataflowPlatform.workers[19].port$o.channel disabled false
-attr mutable ""
-par dataflowPlatform.workers[19].port$o.channel delay 0.0143501s
-attr mutable ""
-attr unit s
-par dataflowPlatform.coordinator.ports$o[19].channel typename "\"dataflowplatform.TCPChannel\""
-par dataflowPlatform.coordinator.ports$o[19].channel disabled false
-attr mutable ""
-par dataflowPlatform.coordinator.ports$o[19].channel delay 0.0143504s
-attr mutable ""
-attr unit s
 par dataflowPlatform.workers[0] typename "\"dataflowplatform.Worker\""
 par dataflowPlatform.workers[0] recovery 650ms
 attr unit ms
 par dataflowPlatform.workers[0] exec 1ms
 attr unit ms
-par dataflowPlatform.workers[0] failure 10
+par dataflowPlatform.workers[0] failure 20
 par dataflowPlatform.workers[1] typename "\"dataflowplatform.Worker\""
 par dataflowPlatform.workers[1] recovery 650ms
 attr unit ms
 par dataflowPlatform.workers[1] exec 1ms
 attr unit ms
-par dataflowPlatform.workers[1] failure 10
+par dataflowPlatform.workers[1] failure 20
 par dataflowPlatform.workers[2] typename "\"dataflowplatform.Worker\""
 par dataflowPlatform.workers[2] recovery 650ms
 attr unit ms
 par dataflowPlatform.workers[2] exec 1ms
 attr unit ms
-par dataflowPlatform.workers[2] failure 10
+par dataflowPlatform.workers[2] failure 20
 par dataflowPlatform.workers[3] typename "\"dataflowplatform.Worker\""
 par dataflowPlatform.workers[3] recovery 650ms
 attr unit ms
 par dataflowPlatform.workers[3] exec 1ms
 attr unit ms
-par dataflowPlatform.workers[3] failure 10
+par dataflowPlatform.workers[3] failure 20
 par dataflowPlatform.workers[4] typename "\"dataflowplatform.Worker\""
 par dataflowPlatform.workers[4] recovery 650ms
 attr unit ms
 par dataflowPlatform.workers[4] exec 1ms
 attr unit ms
-par dataflowPlatform.workers[4] failure 10
+par dataflowPlatform.workers[4] failure 20
 par dataflowPlatform.workers[5] typename "\"dataflowplatform.Worker\""
 par dataflowPlatform.workers[5] recovery 650ms
 attr unit ms
 par dataflowPlatform.workers[5] exec 1ms
 attr unit ms
-par dataflowPlatform.workers[5] failure 10
+par dataflowPlatform.workers[5] failure 20
 par dataflowPlatform.workers[6] typename "\"dataflowplatform.Worker\""
 par dataflowPlatform.workers[6] recovery 650ms
 attr unit ms
 par dataflowPlatform.workers[6] exec 1ms
 attr unit ms
-par dataflowPlatform.workers[6] failure 10
+par dataflowPlatform.workers[6] failure 20
 par dataflowPlatform.workers[7] typename "\"dataflowplatform.Worker\""
 par dataflowPlatform.workers[7] recovery 650ms
 attr unit ms
 par dataflowPlatform.workers[7] exec 1ms
 attr unit ms
-par dataflowPlatform.workers[7] failure 10
+par dataflowPlatform.workers[7] failure 20
 par dataflowPlatform.workers[8] typename "\"dataflowplatform.Worker\""
 par dataflowPlatform.workers[8] recovery 650ms
 attr unit ms
 par dataflowPlatform.workers[8] exec 1ms
 attr unit ms
-par dataflowPlatform.workers[8] failure 10
+par dataflowPlatform.workers[8] failure 20
 par dataflowPlatform.workers[9] typename "\"dataflowplatform.Worker\""
 par dataflowPlatform.workers[9] recovery 650ms
 attr unit ms
 par dataflowPlatform.workers[9] exec 1ms
 attr unit ms
-par dataflowPlatform.workers[9] failure 10
-par dataflowPlatform.workers[10] typename "\"dataflowplatform.Worker\""
-par dataflowPlatform.workers[10] recovery 650ms
-attr unit ms
-par dataflowPlatform.workers[10] exec 1ms
-attr unit ms
-par dataflowPlatform.workers[10] failure 10
-par dataflowPlatform.workers[11] typename "\"dataflowplatform.Worker\""
-par dataflowPlatform.workers[11] recovery 650ms
-attr unit ms
-par dataflowPlatform.workers[11] exec 1ms
-attr unit ms
-par dataflowPlatform.workers[11] failure 10
-par dataflowPlatform.workers[12] typename "\"dataflowplatform.Worker\""
-par dataflowPlatform.workers[12] recovery 650ms
-attr unit ms
-par dataflowPlatform.workers[12] exec 1ms
-attr unit ms
-par dataflowPlatform.workers[12] failure 10
-par dataflowPlatform.workers[13] typename "\"dataflowplatform.Worker\""
-par dataflowPlatform.workers[13] recovery 650ms
-attr unit ms
-par dataflowPlatform.workers[13] exec 1ms
-attr unit ms
-par dataflowPlatform.workers[13] failure 10
-par dataflowPlatform.workers[14] typename "\"dataflowplatform.Worker\""
-par dataflowPlatform.workers[14] recovery 650ms
-attr unit ms
-par dataflowPlatform.workers[14] exec 1ms
-attr unit ms
-par dataflowPlatform.workers[14] failure 10
-par dataflowPlatform.workers[15] typename "\"dataflowplatform.Worker\""
-par dataflowPlatform.workers[15] recovery 650ms
-attr unit ms
-par dataflowPlatform.workers[15] exec 1ms
-attr unit ms
-par dataflowPlatform.workers[15] failure 10
-par dataflowPlatform.workers[16] typename "\"dataflowplatform.Worker\""
-par dataflowPlatform.workers[16] recovery 650ms
-attr unit ms
-par dataflowPlatform.workers[16] exec 1ms
-attr unit ms
-par dataflowPlatform.workers[16] failure 10
-par dataflowPlatform.workers[17] typename "\"dataflowplatform.Worker\""
-par dataflowPlatform.workers[17] recovery 650ms
-attr unit ms
-par dataflowPlatform.workers[17] exec 1ms
-attr unit ms
-par dataflowPlatform.workers[17] failure 10
-par dataflowPlatform.workers[18] typename "\"dataflowplatform.Worker\""
-par dataflowPlatform.workers[18] recovery 650ms
-attr unit ms
-par dataflowPlatform.workers[18] exec 1ms
-attr unit ms
-par dataflowPlatform.workers[18] failure 10
-par dataflowPlatform.workers[19] typename "\"dataflowplatform.Worker\""
-par dataflowPlatform.workers[19] recovery 650ms
-attr unit ms
-par dataflowPlatform.workers[19] exec 1ms
-attr unit ms
-par dataflowPlatform.workers[19] failure 10
+par dataflowPlatform.workers[9] failure 20
 par dataflowPlatform.coordinator typename "\"dataflowplatform.Coordinator\""
-par dataflowPlatform.coordinator workerNumber 20
+par dataflowPlatform.coordinator workerNumber 10
 par dataflowPlatform.coordinator timeout 300ms
 attr unit ms
 par dataflowPlatform.coordinator pingInterval 200ms
 attr unit ms
 par dataflowPlatform typename "\"dataflowplatform.dataflowPlatform\""
-par dataflowPlatform workerNumber 20
+par dataflowPlatform workerNumber 10
 

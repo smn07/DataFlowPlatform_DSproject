@@ -1,0 +1,77 @@
+workerNumber 1
+simulation time: 3801.645330598
+messageNumber: 143
+
+workerNumber 2
+simulation time: 2140.7275476053
+messageNumber: 146
+
+workerNumber 5
+workerNumber 5
+
+workerNumber 10
+simulation time: 1952.2749482485
+messageNumber: 232
+
+workerNumber 20
+simulation time: 1412.1621848654
+messageNumber: 300
+
+Number of map operations: 1
+Number of map operations: 1
+
+Number of map operations: 2
+simulation time: 1352.1967716582
+messageNumber: 142
+
+Number of map operations: 3
+simulation time: 1392.2441228763
+messageNumber: 162
+
+Number of map operations: 5
+simulation time: 1952.2749482485
+messageNumber: 232
+
+Number of map operations: 10
+simulation time: 3500.3709160702
+messageNumber: 412
+
+Number of input pairs: 50
+simulation time: 1715.2285425331
+messageNumber: 221
+
+Number of input pairs: 100
+simulation time: 1726.249712156
+messageNumber: 221
+
+Number of input pairs: 200
+simulation time: 1952.2749482485
+messageNumber: 232
+
+Number of input pairs: 400
+simulation time: 2004.2749482485
+messageNumber: 239
+
+Number of input pairs: 1000
+simulation time: 2309.2049423306
+messageNumber: 250
+
+failure 1
+simulation time: 130.1659470523
+messageNumber: 140
+
+failure 2
+failure 2
+
+failure 5
+simulation time: 1152.180902207
+messageNumber: 191
+
+failure 10
+simulation time: 1952.2749482485
+messageNumber: 232
+
+failure 20
+simulation time: 4090.441613034
+messageNumber: 341
+

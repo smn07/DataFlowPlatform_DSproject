@@ -73,6 +73,7 @@ void Worker::handleExecutionTime(){
 }
 
 void Worker::handleRecovery(){
+    failed = false;
     BackOnline *msg = new BackOnline();
     msg->setWorkerId(id);
     send(msg,"port$o");

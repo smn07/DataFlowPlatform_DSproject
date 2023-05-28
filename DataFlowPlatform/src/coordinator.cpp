@@ -46,7 +46,7 @@ class Coordinator: public cSimpleModule{
         //Vettore con lista di coppie chiave valore divise in chunk
         vector<vector<pair<int,int>>> globalData;
         //Stack contenente l'indice del chunk su cui lavorare, l'indice dell'operazione da schedulare e un bool per sapere se è una map o una reduce
-        stack<pair<bool,pair<int,int>>> currentTaskQueue;
+        stack<pair<int,int>> currentTaskQueue;
         //Vettore con le informaizoni su quali chunk sono stati completati
         vector<bool> chunkDone;
         //Sorted Input per la reduce
@@ -60,16 +60,17 @@ class Coordinator: public cSimpleModule{
         //program finished
         bool finished;
 
+        int messageNumber;
         simtime_t startTime;
 };
 
 Define_Module(Coordinator);
 
 void Coordinator::initialize(){
+    messageNumber=0;
     startTime = simTime();
     parseInput();
     setup();
-    assignTask();
 }
 
 void Coordinator::parseInput(){
@@ -112,7 +113,7 @@ void Coordinator::parseInput(){
 
     //fill currentTaskQueue
     for(int i=0;i<chunkNumber;i++){
-        currentTaskQueue.push(pair<bool,pair<int,int>>{false,pair<int,int>{i,0}});
+        currentTaskQueue.push(pair<int,int>{i,0});
         chunkDone.push_back(false);
     }
 
@@ -167,6 +168,7 @@ void Coordinator::setup(){
         SetId *setmsg = new SetId();
         setmsg->setWorkerId(i);
         send(setmsg, "ports$o",i);
+        messageNumber++;
     }
 
     /*Manda il primo ping ad ogni worker e schedula il timeout*/
@@ -174,6 +176,7 @@ void Coordinator::setup(){
         Ping *pingmsg = new Ping();
         pingmsg->setWorkerId(i);
         send(pingmsg, "ports$o",i);
+        messageNumber++;
 
         PingTimeout *timeoutmsg = new PingTimeout();
         timeoutmsg->setWorkerId(i);
@@ -193,27 +196,28 @@ void Coordinator::assignTask(){
     int freeWorker = getFreeWorker();
     while(freeWorker>=0 && !currentTaskQueue.empty()){
         //Se vi sono worker liberi e task da schedulare
-        pair<bool,pair<int,int>> currentTask = currentTaskQueue.top();
+        pair<int,int> currentTask = currentTaskQueue.top();
         currentTaskQueue.pop();
         ExecuteTask *msg = new ExecuteTask();
-        if (currentTask.first){
+        if (currentTask.second==-1){
             //Se stiamo schedulando una reduce leggiamo da reduce data altrimenti leggiamo da globalData
-            msg->setChunk(reduceData[currentTask.second.first]);
+            msg->setChunk(reduceData[currentTask.first]);
             msg->setOp(reduceTask);
-            workersData[freeWorker].op = pair<int,int>{currentTask.second.first,-1};//il -1 indica che è una reduce
+            workersData[freeWorker].op = pair<int,int>{currentTask.first,-1};//il -1 indica che è una reduce
         } else {
-            msg->setChunk(globalData[currentTask.second.first]);
-            msg->setOp(mapTaskQueue[currentTask.second.second]);
-            workersData[freeWorker].op = currentTask.second;
+            msg->setChunk(globalData[currentTask.first]);
+            msg->setOp(mapTaskQueue[currentTask.second]);
+            workersData[freeWorker].op = currentTask;
         }
         send(msg,"ports$o",freeWorker);
+        messageNumber++;
         freeWorker = getFreeWorker(); 
     }
 }
 
 int Coordinator::getFreeWorker(){
     for(auto worker : workersData){
-        if (worker.online && worker.op == pair<int,int>{-1,0}){
+        if (worker.online && worker.op.first==-1){
             return worker.workerId;
         }
     }
@@ -225,6 +229,7 @@ bool Coordinator::comparePairs(const pair<int,int>& a, const pair<int,int>& b) {
 }
 
 void Coordinator::handleTaskCompleted(TaskCompleted *msg){
+    messageNumber++;
     int workerId = msg->getWorkerId();
     if(workersData[workerId].online){
         //update worker status
@@ -270,21 +275,19 @@ void Coordinator::handleTaskCompleted(TaskCompleted *msg){
                     if (taskCompleted.second == mapTaskQueue.size()-1){
                         //dobbiamo riempire con la reduce
                         if(reduceData[i].size() != 0){
-                            currentTaskQueue.push(pair<bool,pair<int,int>>{true,pair<int,int>{i,-1}});
+                            currentTaskQueue.push(pair<int,int>{i,-1});
                         } else {
                             chunkDone[i]=true;
                         }
                     } else {
-                        currentTaskQueue.push(pair<bool,pair<int,int>>{false,pair<int,int>{i,taskCompleted.second+1}});
+                        currentTaskQueue.push(pair<int,int>{i,taskCompleted.second+1});
                     }
                 }
                 assignTask();
             }
             //if the queue is empty but we are still processing some chunks we wait the next completion
         }
-    } else {
-        cout << "completion recieved from failed node" << endl;
-    }
+    } 
 }
 
 bool Coordinator::chunksDone(){
@@ -304,9 +307,9 @@ void Coordinator::handlePong(Pong *msg){
             delete timeoutId[id];
         }
         if(!finished){
-        SendPing *sendPingmsg = new SendPing();
-        sendPingmsg->setWorkerId(id);
-        scheduleAfter(par("pingInterval"),sendPingmsg);
+            SendPing *sendPingmsg = new SendPing();
+            sendPingmsg->setWorkerId(id);
+            scheduleAfter(par("pingInterval"),sendPingmsg);
         }
     }
 }
@@ -314,6 +317,7 @@ void Coordinator::handlePong(Pong *msg){
 void Coordinator::handleSendPing(SendPing *msg){
     int id=msg->getWorkerId();
     send(new Ping(), "ports$o",id);
+    messageNumber++;
     PingTimeout *timeoutmsg = new PingTimeout();
     timeoutmsg->setWorkerId(id);
     timeoutId[id] = timeoutmsg;
@@ -327,15 +331,18 @@ void Coordinator::handlePingTimeout(PingTimeout *msg){
     if(workersData[id].op.first != -1){
         pair<int,int> failedTask = pair<int,int>{workersData[id].op.first,workersData[id].op.second};
         workersData[id].op = pair<int,int>{-1,0};
-        currentTaskQueue.push(pair<bool,pair<int,int>>{failedTask.second==-1?true:false,failedTask});
+        currentTaskQueue.push(pair<int,int>{failedTask});
         assignTask();
     }
 }
 
 void Coordinator::handleBackOnline(BackOnline *msg){
+    messageNumber++;
     int id = msg->getWorkerId();
     workersData[id].online = true;
+    workersData[id].op = pair<int,int>{-1,0};
     send(new Ping(), "ports$o",id);
+    messageNumber++;
     PingTimeout *timeoutmsg = new PingTimeout();
     timeoutmsg->setWorkerId(id);
     timeoutId[id] = timeoutmsg;
@@ -394,9 +401,9 @@ void Coordinator::endProgram(){
     outFile.close();
 
     std::cout << "Pairs have been written to the file." << std::endl;
-
     simtime_t endTime = simTime();
-    cout << "Total simTime " << startTime-endTime << endl;
+    recordScalar("simulation time",(endTime-startTime).dbl());
+    recordScalar("messageNumber",messageNumber);
 
     endSimulation();
     return;

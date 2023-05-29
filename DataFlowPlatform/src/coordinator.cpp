@@ -57,8 +57,6 @@ class Coordinator: public cSimpleModule{
         int chunkNumber;
         //numero di worker
         int workerNumber;
-        //program finished
-        bool finished;
 
         int messageNumber;
         simtime_t startTime;
@@ -261,7 +259,6 @@ void Coordinator::handleTaskCompleted(TaskCompleted *msg){
         
         if (taskCompleted.second == -1 && chunksDone()){
             //program is done, il -1 indica che abbiamo terminato una reduce
-            finished = true;
             endProgram();
         } else {
             //program is not done, schedule next op
@@ -306,11 +303,9 @@ void Coordinator::handlePong(Pong *msg){
             drop(timeoutId[id]);
             delete timeoutId[id];
         }
-        if(!finished){
-            SendPing *sendPingmsg = new SendPing();
-            sendPingmsg->setWorkerId(id);
-            scheduleAfter(par("pingInterval"),sendPingmsg);
-        }
+        SendPing *sendPingmsg = new SendPing();
+        sendPingmsg->setWorkerId(id);
+        scheduleAfter(par("pingInterval"),sendPingmsg);
     }
 }
 

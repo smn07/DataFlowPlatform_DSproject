@@ -1,0 +1,545 @@
+* Event #1  t=0.010283564879  dataflowPlatform.workers[7] (Worker, id=9)  on  (SetId, id=7)
+
+INFO: 7
+** Event #2  t=0.010283564879  dataflowPlatform.workers[7] (Worker, id=9)  on  (Ping, id=24)
+
+** Event #3  t=0.010283564879  dataflowPlatform.workers[7] (Worker, id=9)  on  (ExecuteTask, id=37)
+
+** Event #4  t=0.011363281473  dataflowPlatform.workers[8] (Worker, id=10)  on  (SetId, id=8)
+
+INFO: 8
+** Event #5  t=0.011363281473  dataflowPlatform.workers[8] (Worker, id=10)  on  (Ping, id=26)
+
+** Event #6  t=0.011363281473  dataflowPlatform.workers[8] (Worker, id=10)  on  (ExecuteTask, id=38)
+
+** Event #7  t=0.011487673026  dataflowPlatform.workers[6] (Worker, id=8)  on  (SetId, id=6)
+
+INFO: 6
+** Event #8  t=0.011487673026  dataflowPlatform.workers[6] (Worker, id=8)  on  (Ping, id=22)
+
+** Event #9  t=0.011487673026  dataflowPlatform.workers[6] (Worker, id=8)  on  (ExecuteTask, id=36)
+
+** Event #10  t=0.011921908541  dataflowPlatform.workers[5] (Worker, id=7)  on  (SetId, id=5)
+
+INFO: 5
+** Event #11  t=0.011921908541  dataflowPlatform.workers[5] (Worker, id=7)  on  (Ping, id=20)
+
+** Event #12  t=0.011921908541  dataflowPlatform.workers[5] (Worker, id=7)  on  (ExecuteTask, id=35)
+
+** Event #13  t=0.012388325558  dataflowPlatform.workers[9] (Worker, id=11)  on  (SetId, id=9)
+
+INFO: 9
+** Event #14  t=0.012388325558  dataflowPlatform.workers[9] (Worker, id=11)  on  (Ping, id=28)
+
+** Event #15  t=0.012388325558  dataflowPlatform.workers[9] (Worker, id=11)  on  (ExecuteTask, id=39)
+
+** Event #16  t=0.012964223082  dataflowPlatform.workers[0] (Worker, id=2)  on  (SetId, id=0)
+
+INFO: 0
+** Event #17  t=0.012964223082  dataflowPlatform.workers[0] (Worker, id=2)  on  (Ping, id=10)
+
+** Event #18  t=0.012964223082  dataflowPlatform.workers[0] (Worker, id=2)  on  (ExecuteTask, id=30)
+
+** Event #19  t=0.013117818482  dataflowPlatform.workers[4] (Worker, id=6)  on  (SetId, id=4)
+
+INFO: 4
+** Event #20  t=0.013117818482  dataflowPlatform.workers[4] (Worker, id=6)  on  (Ping, id=18)
+
+** Event #21  t=0.013117818482  dataflowPlatform.workers[4] (Worker, id=6)  on  (ExecuteTask, id=34)
+
+** Event #22  t=0.01422132872  dataflowPlatform.workers[1] (Worker, id=3)  on  (SetId, id=1)
+
+INFO: 1
+** Event #23  t=0.01422132872  dataflowPlatform.workers[1] (Worker, id=3)  on  (Ping, id=12)
+
+** Event #24  t=0.01422132872  dataflowPlatform.workers[1] (Worker, id=3)  on  (ExecuteTask, id=31)
+
+** Event #25  t=0.014236258686  dataflowPlatform.workers[3] (Worker, id=5)  on  (SetId, id=3)
+
+INFO: 3
+** Event #26  t=0.014236258686  dataflowPlatform.workers[3] (Worker, id=5)  on  (Ping, id=16)
+
+** Event #27  t=0.014236258686  dataflowPlatform.workers[3] (Worker, id=5)  on  (ExecuteTask, id=33)
+
+** Event #28  t=0.014289728099  dataflowPlatform.workers[2] (Worker, id=4)  on  (SetId, id=2)
+
+INFO: 2
+** Event #29  t=0.014289728099  dataflowPlatform.workers[2] (Worker, id=4)  on  (Ping, id=14)
+
+** Event #30  t=0.014289728099  dataflowPlatform.workers[2] (Worker, id=4)  on  (ExecuteTask, id=32)
+
+** Event #31  t=0.023675609076  dataflowPlatform.coordinator (Coordinator, id=12)  on  (Pong, id=44)
+
+** Event #32  t=0.024305533165  dataflowPlatform.coordinator (Coordinator, id=12)  on  (Pong, id=48)
+
+** Event #33  t=0.024742429888  dataflowPlatform.coordinator (Coordinator, id=12)  on  (Pong, id=40)
+
+** Event #34  t=0.025151379116  dataflowPlatform.coordinator (Coordinator, id=12)  on  (Pong, id=46)
+
+** Event #35  t=0.025236092466  dataflowPlatform.coordinator (Coordinator, id=12)  on  (Pong, id=52)
+
+** Event #36  t=0.025708290594  dataflowPlatform.coordinator (Coordinator, id=12)  on  (Pong, id=50)
+
+** Event #37  t=0.026181595293  dataflowPlatform.coordinator (Coordinator, id=12)  on  (Pong, id=42)
+
+** Event #38  t=0.026960674573  dataflowPlatform.coordinator (Coordinator, id=12)  on  (Pong, id=56)
+
+** Event #39  t=0.027303544951  dataflowPlatform.coordinator (Coordinator, id=12)  on  (Pong, id=58)
+
+** Event #40  t=0.027797275545  dataflowPlatform.coordinator (Coordinator, id=12)  on  (Pong, id=54)
+
+** Event #41  t=20.010283564879  dataflowPlatform.workers[7] (Worker, id=9)  on selfmsg  (ExecutionTime, id=41)
+
+** Event #42  t=20.011363281473  dataflowPlatform.workers[8] (Worker, id=10)  on selfmsg  (ExecutionTime, id=43)
+
+** Event #43  t=20.011487673026  dataflowPlatform.workers[6] (Worker, id=8)  on selfmsg  (ExecutionTime, id=45)
+
+** Event #44  t=20.011921908541  dataflowPlatform.workers[5] (Worker, id=7)  on selfmsg  (ExecutionTime, id=47)
+
+** Event #45  t=20.012388325558  dataflowPlatform.workers[9] (Worker, id=11)  on selfmsg  (ExecutionTime, id=49)
+
+** Event #46  t=20.012964223082  dataflowPlatform.workers[0] (Worker, id=2)  on selfmsg  (ExecutionTime, id=51)
+
+** Event #47  t=20.013117818482  dataflowPlatform.workers[4] (Worker, id=6)  on selfmsg  (ExecutionTime, id=53)
+
+** Event #48  t=20.01422132872  dataflowPlatform.workers[1] (Worker, id=3)  on selfmsg  (ExecutionTime, id=55)
+
+** Event #49  t=20.014236258686  dataflowPlatform.workers[3] (Worker, id=5)  on selfmsg  (ExecutionTime, id=57)
+
+** Event #50  t=20.014289728099  dataflowPlatform.workers[2] (Worker, id=4)  on selfmsg  (ExecutionTime, id=59)
+
+** Event #51  t=20.023675609076  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=72)
+
+** Event #52  t=20.024305533165  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=74)
+
+** Event #53  t=20.024742429888  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=70)
+
+** Event #54  t=20.025151379116  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=73)
+
+** Event #55  t=20.025236092466  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=76)
+
+** Event #56  t=20.025708290594  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=75)
+
+** Event #57  t=20.026181595293  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=71)
+
+** Event #58  t=20.026960674573  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=78)
+
+** Event #59  t=20.027303544951  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=79)
+
+** Event #60  t=20.027797275545  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=77)
+
+** Event #61  t=20.038080840424  dataflowPlatform.workers[7] (Worker, id=9)  on  (ExecuteTask, id=87)
+
+** Event #62  t=20.039160557018  dataflowPlatform.workers[8] (Worker, id=10)  on  (ExecuteTask, id=88)
+
+** Event #63  t=20.039284948571  dataflowPlatform.workers[6] (Worker, id=8)  on  (ExecuteTask, id=86)
+
+** Event #64  t=20.039719184086  dataflowPlatform.workers[5] (Worker, id=7)  on  (ExecuteTask, id=85)
+
+** Event #65  t=20.040185601103  dataflowPlatform.workers[9] (Worker, id=11)  on  (ExecuteTask, id=89)
+
+** Event #66  t=20.040761498627  dataflowPlatform.workers[0] (Worker, id=2)  on  (ExecuteTask, id=80)
+
+** Event #67  t=20.040915094027  dataflowPlatform.workers[4] (Worker, id=6)  on  (ExecuteTask, id=84)
+
+** Event #68  t=20.042018604265  dataflowPlatform.workers[1] (Worker, id=3)  on  (ExecuteTask, id=81)
+
+** Event #69  t=20.042033534231  dataflowPlatform.workers[3] (Worker, id=5)  on  (ExecuteTask, id=83)
+
+** Event #70  t=20.042087003644  dataflowPlatform.workers[2] (Worker, id=4)  on  (ExecuteTask, id=82)
+
+** Event #71  t=40.038080840424  dataflowPlatform.workers[7] (Worker, id=9)  on selfmsg  (ExecutionTime, id=90)
+
+** Event #72  t=40.039160557018  dataflowPlatform.workers[8] (Worker, id=10)  on selfmsg  (ExecutionTime, id=91)
+
+** Event #73  t=40.039284948571  dataflowPlatform.workers[6] (Worker, id=8)  on selfmsg  (ExecutionTime, id=92)
+
+** Event #74  t=40.039719184086  dataflowPlatform.workers[5] (Worker, id=7)  on selfmsg  (ExecutionTime, id=93)
+
+** Event #75  t=40.040185601103  dataflowPlatform.workers[9] (Worker, id=11)  on selfmsg  (ExecutionTime, id=94)
+
+** Event #76  t=40.040761498627  dataflowPlatform.workers[0] (Worker, id=2)  on selfmsg  (ExecutionTime, id=95)
+
+** Event #77  t=40.040915094027  dataflowPlatform.workers[4] (Worker, id=6)  on selfmsg  (ExecutionTime, id=96)
+
+** Event #78  t=40.042018604265  dataflowPlatform.workers[1] (Worker, id=3)  on selfmsg  (ExecutionTime, id=97)
+
+** Event #79  t=40.042033534231  dataflowPlatform.workers[3] (Worker, id=5)  on selfmsg  (ExecutionTime, id=98)
+
+** Event #80  t=40.042087003644  dataflowPlatform.workers[2] (Worker, id=4)  on selfmsg  (ExecutionTime, id=99)
+
+** Event #81  t=40.051472884621  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=102)
+
+** Event #82  t=40.05210280871  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=104)
+
+** Event #83  t=40.052539705433  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=100)
+
+** Event #84  t=40.052948654661  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=103)
+
+** Event #85  t=40.053033368011  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=106)
+
+** Event #86  t=40.053505566139  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=105)
+
+** Event #87  t=40.053978870838  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=101)
+
+** Event #88  t=40.054757950118  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=108)
+
+** Event #89  t=40.055100820496  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=109)
+
+** Event #90  t=40.05559455109  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=107)
+
+** Event #91  t=40.065878115969  dataflowPlatform.workers[7] (Worker, id=9)  on  (ExecuteTask, id=117)
+
+** Event #92  t=40.066957832563  dataflowPlatform.workers[8] (Worker, id=10)  on  (ExecuteTask, id=118)
+
+** Event #93  t=40.067082224116  dataflowPlatform.workers[6] (Worker, id=8)  on  (ExecuteTask, id=116)
+
+** Event #94  t=40.067516459631  dataflowPlatform.workers[5] (Worker, id=7)  on  (ExecuteTask, id=115)
+
+** Event #95  t=40.067982876648  dataflowPlatform.workers[9] (Worker, id=11)  on  (ExecuteTask, id=119)
+
+** Event #96  t=40.068558774172  dataflowPlatform.workers[0] (Worker, id=2)  on  (ExecuteTask, id=110)
+
+** Event #97  t=40.068712369572  dataflowPlatform.workers[4] (Worker, id=6)  on  (ExecuteTask, id=114)
+
+** Event #98  t=40.06981587981  dataflowPlatform.workers[1] (Worker, id=3)  on  (ExecuteTask, id=111)
+
+** Event #99  t=40.069830809776  dataflowPlatform.workers[3] (Worker, id=5)  on  (ExecuteTask, id=113)
+
+** Event #100  t=40.069884279189  dataflowPlatform.workers[2] (Worker, id=4)  on  (ExecuteTask, id=112)
+
+** Event #101  t=60.065878115969  dataflowPlatform.workers[7] (Worker, id=9)  on selfmsg  (ExecutionTime, id=120)
+
+** Event #102  t=60.066957832563  dataflowPlatform.workers[8] (Worker, id=10)  on selfmsg  (ExecutionTime, id=121)
+
+** Event #103  t=60.067082224116  dataflowPlatform.workers[6] (Worker, id=8)  on selfmsg  (ExecutionTime, id=122)
+
+** Event #104  t=60.067516459631  dataflowPlatform.workers[5] (Worker, id=7)  on selfmsg  (ExecutionTime, id=123)
+
+** Event #105  t=60.067982876648  dataflowPlatform.workers[9] (Worker, id=11)  on selfmsg  (ExecutionTime, id=124)
+
+** Event #106  t=60.068558774172  dataflowPlatform.workers[0] (Worker, id=2)  on selfmsg  (ExecutionTime, id=125)
+
+** Event #107  t=60.068712369572  dataflowPlatform.workers[4] (Worker, id=6)  on selfmsg  (ExecutionTime, id=126)
+
+** Event #108  t=60.06981587981  dataflowPlatform.workers[1] (Worker, id=3)  on selfmsg  (ExecutionTime, id=127)
+
+** Event #109  t=60.069830809776  dataflowPlatform.workers[3] (Worker, id=5)  on selfmsg  (ExecutionTime, id=128)
+
+** Event #110  t=60.069884279189  dataflowPlatform.workers[2] (Worker, id=4)  on selfmsg  (ExecutionTime, id=129)
+
+** Event #111  t=60.079270160166  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=132)
+
+** Event #112  t=60.079900084255  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=134)
+
+** Event #113  t=60.080336980978  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=130)
+
+** Event #114  t=60.080745930206  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=133)
+
+** Event #115  t=60.080830643556  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=136)
+
+** Event #116  t=60.081302841684  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=135)
+
+** Event #117  t=60.081776146383  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=131)
+
+** Event #118  t=60.082555225663  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=138)
+
+** Event #119  t=60.082898096041  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=139)
+
+** Event #120  t=60.083391826635  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=137)
+
+** Event #121  t=60.093675391514  dataflowPlatform.workers[7] (Worker, id=9)  on  (ExecuteTask, id=147)
+
+** Event #122  t=60.094755108108  dataflowPlatform.workers[8] (Worker, id=10)  on  (ExecuteTask, id=148)
+
+** Event #123  t=60.094879499661  dataflowPlatform.workers[6] (Worker, id=8)  on  (ExecuteTask, id=146)
+
+** Event #124  t=60.095313735176  dataflowPlatform.workers[5] (Worker, id=7)  on  (ExecuteTask, id=145)
+
+** Event #125  t=60.095780152193  dataflowPlatform.workers[9] (Worker, id=11)  on  (ExecuteTask, id=149)
+
+** Event #126  t=60.096356049717  dataflowPlatform.workers[0] (Worker, id=2)  on  (ExecuteTask, id=140)
+
+** Event #127  t=60.096509645117  dataflowPlatform.workers[4] (Worker, id=6)  on  (ExecuteTask, id=144)
+
+** Event #128  t=60.097613155355  dataflowPlatform.workers[1] (Worker, id=3)  on  (ExecuteTask, id=141)
+
+** Event #129  t=60.097628085321  dataflowPlatform.workers[3] (Worker, id=5)  on  (ExecuteTask, id=143)
+
+** Event #130  t=60.097681554734  dataflowPlatform.workers[2] (Worker, id=4)  on  (ExecuteTask, id=142)
+
+** Event #131  t=80.093675391514  dataflowPlatform.workers[7] (Worker, id=9)  on selfmsg  (ExecutionTime, id=150)
+
+** Event #132  t=80.094755108108  dataflowPlatform.workers[8] (Worker, id=10)  on selfmsg  (ExecutionTime, id=151)
+
+** Event #133  t=80.094879499661  dataflowPlatform.workers[6] (Worker, id=8)  on selfmsg  (ExecutionTime, id=152)
+
+** Event #134  t=80.095313735176  dataflowPlatform.workers[5] (Worker, id=7)  on selfmsg  (ExecutionTime, id=153)
+
+** Event #135  t=80.095780152193  dataflowPlatform.workers[9] (Worker, id=11)  on selfmsg  (ExecutionTime, id=154)
+
+** Event #136  t=80.096356049717  dataflowPlatform.workers[0] (Worker, id=2)  on selfmsg  (ExecutionTime, id=155)
+
+** Event #137  t=80.096509645117  dataflowPlatform.workers[4] (Worker, id=6)  on selfmsg  (ExecutionTime, id=156)
+
+** Event #138  t=80.097613155355  dataflowPlatform.workers[1] (Worker, id=3)  on selfmsg  (ExecutionTime, id=157)
+
+** Event #139  t=80.097628085321  dataflowPlatform.workers[3] (Worker, id=5)  on selfmsg  (ExecutionTime, id=158)
+
+** Event #140  t=80.097681554734  dataflowPlatform.workers[2] (Worker, id=4)  on selfmsg  (ExecutionTime, id=159)
+
+** Event #141  t=80.107067435711  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=162)
+
+** Event #142  t=80.1076973598  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=164)
+
+** Event #143  t=80.108134256523  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=160)
+
+** Event #144  t=80.108543205751  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=163)
+
+** Event #145  t=80.108627919101  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=166)
+
+** Event #146  t=80.109100117229  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=165)
+
+** Event #147  t=80.109573421928  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=161)
+
+** Event #148  t=80.110352501208  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=168)
+
+** Event #149  t=80.110695371586  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=169)
+
+** Event #150  t=80.11118910218  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=167)
+
+** Event #151  t=80.121472667059  dataflowPlatform.workers[7] (Worker, id=9)  on  (ExecuteTask, id=177)
+
+** Event #152  t=80.122552383653  dataflowPlatform.workers[8] (Worker, id=10)  on  (ExecuteTask, id=178)
+
+** Event #153  t=80.122676775206  dataflowPlatform.workers[6] (Worker, id=8)  on  (ExecuteTask, id=176)
+
+** Event #154  t=80.123111010721  dataflowPlatform.workers[5] (Worker, id=7)  on  (ExecuteTask, id=175)
+
+** Event #155  t=80.123577427738  dataflowPlatform.workers[9] (Worker, id=11)  on  (ExecuteTask, id=179)
+
+** Event #156  t=80.124153325262  dataflowPlatform.workers[0] (Worker, id=2)  on  (ExecuteTask, id=170)
+
+** Event #157  t=80.124306920662  dataflowPlatform.workers[4] (Worker, id=6)  on  (ExecuteTask, id=174)
+
+** Event #158  t=80.1254104309  dataflowPlatform.workers[1] (Worker, id=3)  on  (ExecuteTask, id=171)
+
+** Event #159  t=80.125425360866  dataflowPlatform.workers[3] (Worker, id=5)  on  (ExecuteTask, id=173)
+
+** Event #160  t=80.125478830279  dataflowPlatform.workers[2] (Worker, id=4)  on  (ExecuteTask, id=172)
+
+** Event #161  t=100.121472667059  dataflowPlatform.workers[7] (Worker, id=9)  on selfmsg  (ExecutionTime, id=180)
+
+** Event #162  t=100.122552383653  dataflowPlatform.workers[8] (Worker, id=10)  on selfmsg  (ExecutionTime, id=181)
+
+** Event #163  t=100.122676775206  dataflowPlatform.workers[6] (Worker, id=8)  on selfmsg  (ExecutionTime, id=182)
+
+** Event #164  t=100.123111010721  dataflowPlatform.workers[5] (Worker, id=7)  on selfmsg  (ExecutionTime, id=183)
+
+** Event #165  t=100.123577427738  dataflowPlatform.workers[9] (Worker, id=11)  on selfmsg  (ExecutionTime, id=184)
+
+** Event #166  t=100.124153325262  dataflowPlatform.workers[0] (Worker, id=2)  on selfmsg  (ExecutionTime, id=185)
+
+** Event #167  t=100.124306920662  dataflowPlatform.workers[4] (Worker, id=6)  on selfmsg  (ExecutionTime, id=186)
+
+** Event #168  t=100.1254104309  dataflowPlatform.workers[1] (Worker, id=3)  on selfmsg  (ExecutionTime, id=187)
+
+** Event #169  t=100.125478830279  dataflowPlatform.workers[2] (Worker, id=4)  on selfmsg  (ExecutionTime, id=189)
+
+** Event #170  t=100.134864711256  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=192)
+
+** Event #171  t=100.135494635345  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=194)
+
+** Event #172  t=100.135931532068  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=190)
+
+** Event #173  t=100.136340481296  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=193)
+
+** Event #174  t=100.136425194646  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=196)
+
+** Event #175  t=100.136897392774  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=195)
+
+** Event #176  t=100.137370697473  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=191)
+
+** Event #177  t=100.138492647131  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=198)
+
+** Event #178  t=100.138986377725  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=197)
+
+** Event #179  t=200.023675609076  dataflowPlatform.coordinator (Coordinator, id=12)  on selfmsg  (SendPing, id=60)
+
+** Event #180  t=200.024305533165  dataflowPlatform.coordinator (Coordinator, id=12)  on selfmsg  (SendPing, id=61)
+
+** Event #181  t=200.024742429888  dataflowPlatform.coordinator (Coordinator, id=12)  on selfmsg  (SendPing, id=62)
+
+** Event #182  t=200.025151379116  dataflowPlatform.coordinator (Coordinator, id=12)  on selfmsg  (SendPing, id=63)
+
+** Event #183  t=200.025236092466  dataflowPlatform.coordinator (Coordinator, id=12)  on selfmsg  (SendPing, id=64)
+
+** Event #184  t=200.025708290594  dataflowPlatform.coordinator (Coordinator, id=12)  on selfmsg  (SendPing, id=65)
+
+** Event #185  t=200.026181595293  dataflowPlatform.coordinator (Coordinator, id=12)  on selfmsg  (SendPing, id=66)
+
+** Event #186  t=200.026960674573  dataflowPlatform.coordinator (Coordinator, id=12)  on selfmsg  (SendPing, id=67)
+
+** Event #187  t=200.027303544951  dataflowPlatform.coordinator (Coordinator, id=12)  on selfmsg  (SendPing, id=68)
+
+** Event #188  t=200.027797275545  dataflowPlatform.coordinator (Coordinator, id=12)  on selfmsg  (SendPing, id=69)
+
+** Event #189  t=200.035025994767  dataflowPlatform.workers[7] (Worker, id=9)  on  (Ping, id=203)
+
+** Event #190  t=200.035163282102  dataflowPlatform.workers[6] (Worker, id=8)  on  (Ping, id=199)
+
+** Event #191  t=200.036693858723  dataflowPlatform.workers[9] (Worker, id=11)  on  (Ping, id=201)
+
+** Event #192  t=200.037073287657  dataflowPlatform.workers[5] (Worker, id=7)  on  (Ping, id=205)
+
+** Event #193  t=200.037544876766  dataflowPlatform.workers[8] (Worker, id=10)  on  (Ping, id=211)
+
+** Event #194  t=200.038353910948  dataflowPlatform.workers[4] (Worker, id=6)  on  (Ping, id=207)
+
+** Event #195  t=200.038672513676  dataflowPlatform.workers[0] (Worker, id=2)  on  (Ping, id=209)
+
+** Event #196  t=200.041196933259  dataflowPlatform.workers[3] (Worker, id=5)  on  (Ping, id=213)
+
+** Event #197  t=200.04159327305  dataflowPlatform.workers[2] (Worker, id=4)  on  (Ping, id=215)
+
+** Event #198  t=200.042018604265  dataflowPlatform.workers[1] (Worker, id=3)  on  (Ping, id=217)
+
+** Event #199  t=200.047351218152  dataflowPlatform.coordinator (Coordinator, id=12)  on  (Pong, id=220)
+
+** Event #200  t=200.04861106633  dataflowPlatform.coordinator (Coordinator, id=12)  on  (Pong, id=221)
+
+** Event #201  t=200.049484859776  dataflowPlatform.coordinator (Coordinator, id=12)  on  (Pong, id=219)
+
+** Event #202  t=200.050302758232  dataflowPlatform.coordinator (Coordinator, id=12)  on  (Pong, id=222)
+
+** Event #203  t=200.050472184932  dataflowPlatform.coordinator (Coordinator, id=12)  on  (Pong, id=224)
+
+** Event #204  t=200.051416581188  dataflowPlatform.coordinator (Coordinator, id=12)  on  (Pong, id=225)
+
+** Event #205  t=200.052363190586  dataflowPlatform.coordinator (Coordinator, id=12)  on  (Pong, id=223)
+
+** Event #206  t=200.054607089902  dataflowPlatform.coordinator (Coordinator, id=12)  on  (Pong, id=226)
+
+** Event #207  t=200.05559455109  dataflowPlatform.coordinator (Coordinator, id=12)  on  (Pong, id=227)
+
+** Event #208  t=400.047351218152  dataflowPlatform.coordinator (Coordinator, id=12)  on selfmsg  (SendPing, id=228)
+
+** Event #209  t=400.04861106633  dataflowPlatform.coordinator (Coordinator, id=12)  on selfmsg  (SendPing, id=229)
+
+** Event #210  t=400.049484859776  dataflowPlatform.coordinator (Coordinator, id=12)  on selfmsg  (SendPing, id=230)
+
+** Event #211  t=400.050302758232  dataflowPlatform.coordinator (Coordinator, id=12)  on selfmsg  (SendPing, id=231)
+
+** Event #212  t=400.050472184932  dataflowPlatform.coordinator (Coordinator, id=12)  on selfmsg  (SendPing, id=232)
+
+** Event #213  t=400.051416581188  dataflowPlatform.coordinator (Coordinator, id=12)  on selfmsg  (SendPing, id=233)
+
+** Event #214  t=400.052363190586  dataflowPlatform.coordinator (Coordinator, id=12)  on selfmsg  (SendPing, id=234)
+
+** Event #215  t=400.054607089902  dataflowPlatform.coordinator (Coordinator, id=12)  on selfmsg  (SendPing, id=235)
+
+** Event #216  t=400.05559455109  dataflowPlatform.coordinator (Coordinator, id=12)  on selfmsg  (SendPing, id=236)
+
+** Event #217  t=400.058838891178  dataflowPlatform.workers[6] (Worker, id=8)  on  (Ping, id=237)
+
+** Event #218  t=400.059768424655  dataflowPlatform.workers[7] (Worker, id=9)  on  (Ping, id=241)
+
+** Event #219  t=400.060999391888  dataflowPlatform.workers[9] (Worker, id=11)  on  (Ping, id=239)
+
+** Event #220  t=400.062224666773  dataflowPlatform.workers[5] (Worker, id=7)  on  (Ping, id=243)
+
+** Event #221  t=400.063590003414  dataflowPlatform.workers[4] (Worker, id=6)  on  (Ping, id=245)
+
+** Event #222  t=400.063726472059  dataflowPlatform.workers[8] (Worker, id=10)  on  (Ping, id=249)
+
+** Event #223  t=400.06438080427  dataflowPlatform.workers[0] (Worker, id=2)  on  (Ping, id=247)
+
+** Event #224  t=400.068896818001  dataflowPlatform.workers[2] (Worker, id=4)  on  (Ping, id=251)
+
+** Event #225  t=400.06981587981  dataflowPlatform.workers[1] (Worker, id=3)  on  (Ping, id=253)
+
+** Event #226  t=400.071026827228  dataflowPlatform.coordinator (Coordinator, id=12)  on  (Pong, id=255)
+
+** Event #227  t=400.072916599495  dataflowPlatform.coordinator (Coordinator, id=12)  on  (Pong, id=257)
+
+** Event #228  t=400.074227289664  dataflowPlatform.coordinator (Coordinator, id=12)  on  (Pong, id=256)
+
+** Event #229  t=400.075454137348  dataflowPlatform.coordinator (Coordinator, id=12)  on  (Pong, id=258)
+
+** Event #230  t=400.075708277398  dataflowPlatform.coordinator (Coordinator, id=12)  on  (Pong, id=259)
+
+** Event #231  t=400.077124871782  dataflowPlatform.coordinator (Coordinator, id=12)  on  (Pong, id=261)
+
+** Event #232  t=400.078544785879  dataflowPlatform.coordinator (Coordinator, id=12)  on  (Pong, id=260)
+
+** Event #233  t=400.081910634853  dataflowPlatform.coordinator (Coordinator, id=12)  on  (Pong, id=262)
+
+** Event #234  t=400.083391826635  dataflowPlatform.coordinator (Coordinator, id=12)  on  (Pong, id=263)
+
+** Event #235  t=500.026960674573  dataflowPlatform.coordinator (Coordinator, id=12)  on selfmsg  (PingTimeout, id=214)
+
+** Event #236  t=500.039924897655  dataflowPlatform.workers[0] (Worker, id=2)  on  (ExecuteTask, id=273)
+
+** Event #237  t=520.039924897655  dataflowPlatform.workers[0] (Worker, id=2)  on selfmsg  (ExecutionTime, id=274)
+
+** Event #238  t=520.052668965167  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=275)
+
+** Event #239  t=520.062952530046  dataflowPlatform.workers[7] (Worker, id=9)  on  (ExecuteTask, id=282)
+
+** Event #240  t=520.06403224664  dataflowPlatform.workers[8] (Worker, id=10)  on  (ExecuteTask, id=283)
+
+** Event #241  t=520.064156638193  dataflowPlatform.workers[6] (Worker, id=8)  on  (ExecuteTask, id=281)
+
+** Event #242  t=520.064590873708  dataflowPlatform.workers[5] (Worker, id=7)  on  (ExecuteTask, id=280)
+
+** Event #243  t=520.065057290725  dataflowPlatform.workers[9] (Worker, id=11)  on  (ExecuteTask, id=284)
+
+** Event #244  t=520.065633188249  dataflowPlatform.workers[0] (Worker, id=2)  on  (ExecuteTask, id=276)
+
+** Event #245  t=520.065786783649  dataflowPlatform.workers[4] (Worker, id=6)  on  (ExecuteTask, id=279)
+
+** Event #246  t=520.066890293887  dataflowPlatform.workers[1] (Worker, id=3)  on  (ExecuteTask, id=277)
+
+** Event #247  t=520.066958693266  dataflowPlatform.workers[2] (Worker, id=4)  on  (ExecuteTask, id=278)
+
+** Event #248  t=532.062952530046  dataflowPlatform.workers[7] (Worker, id=9)  on selfmsg  (ExecutionTime, id=285)
+
+** Event #249  t=532.064156638193  dataflowPlatform.workers[6] (Worker, id=8)  on selfmsg  (ExecutionTime, id=287)
+
+** Event #250  t=532.076344574243  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=295)
+
+** Event #251  t=532.077411395055  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=294)
+
+** Event #252  t=532.087832247269  dataflowPlatform.workers[6] (Worker, id=8)  on  (ExecuteTask, id=296)
+
+** Event #253  t=536.064590873708  dataflowPlatform.workers[5] (Worker, id=7)  on selfmsg  (ExecutionTime, id=288)
+
+** Event #254  t=536.066890293887  dataflowPlatform.workers[1] (Worker, id=3)  on selfmsg  (ExecutionTime, id=292)
+
+** Event #255  t=536.077820344283  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=298)
+
+** Event #256  t=536.080466240712  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=299)
+
+** Event #257  t=540.065633188249  dataflowPlatform.workers[0] (Worker, id=2)  on selfmsg  (ExecutionTime, id=290)
+
+** Event #258  t=540.078377255761  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=300)
+
+** Event #259  t=542.066958693266  dataflowPlatform.workers[2] (Worker, id=4)  on selfmsg  (ExecutionTime, id=293)
+
+** Event #260  t=542.079972510118  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=301)
+
+** Event #261  t=544.065057290725  dataflowPlatform.workers[9] (Worker, id=11)  on selfmsg  (ExecutionTime, id=289)
+
+** Event #262  t=544.076974498332  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=302)
+
+** Event #263  t=548.06403224664  dataflowPlatform.workers[8] (Worker, id=10)  on selfmsg  (ExecutionTime, id=286)
+
+** Event #264  t=548.07885056046  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=303)
+
+** Event #265  t=550.065786783649  dataflowPlatform.workers[4] (Worker, id=6)  on selfmsg  (ExecutionTime, id=291)
+
+** Event #266  t=550.077905057633  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=304)
+
+** Event #267  t=552.087832247269  dataflowPlatform.workers[6] (Worker, id=8)  on selfmsg  (ExecutionTime, id=297)
+
+** Event #268  t=552.100020183319  dataflowPlatform.coordinator (Coordinator, id=12)  on  (TaskCompleted, id=305)

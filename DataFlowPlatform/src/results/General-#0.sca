@@ -1,8 +1,8 @@
 version 3
-run General-0-20230528-20:00:02-43238
+run General-0-20230529-13:42:31-4223
 attr configname General
-attr datetime 20230528-20:00:02
-attr datetimef 20230528-200002
+attr datetime 20230529-13:42:31
+attr datetimef 20230529-134231
 attr experiment General
 attr inifile omnetpp.ini
 attr iterationvars ""
@@ -10,7 +10,7 @@ attr iterationvarsd ""
 attr iterationvarsf ""
 attr measurement ""
 attr network dataflowplatform.dataflowPlatform
-attr processid 43238
+attr processid 4223
 attr repetition 0
 attr replication #0
 attr resultdir results
@@ -22,10 +22,10 @@ config **.coordinator.timeout 300ms
 config **.coordinator.pingInterval 200ms
 config **.workers*.recovery 650ms
 config **.workers*.exec 1ms
-config **.workers*.failure 20
+config **.workers*.failure 2
 
-scalar dataflowPlatform.coordinator "simulation time" 4090.441613034
-scalar dataflowPlatform.coordinator messageNumber 341
+scalar dataflowPlatform.coordinator "simulation time" 552.10002018332
+scalar dataflowPlatform.coordinator messageNumber 160
 par dataflowPlatform.workers[0].port$o.channel typename "\"dataflowplatform.TCPChannel\""
 par dataflowPlatform.workers[0].port$o.channel disabled false
 attr mutable ""
@@ -151,61 +151,61 @@ par dataflowPlatform.workers[0] recovery 650ms
 attr unit ms
 par dataflowPlatform.workers[0] exec 1ms
 attr unit ms
-par dataflowPlatform.workers[0] failure 20
+par dataflowPlatform.workers[0] failure 2
 par dataflowPlatform.workers[1] typename "\"dataflowplatform.Worker\""
 par dataflowPlatform.workers[1] recovery 650ms
 attr unit ms
 par dataflowPlatform.workers[1] exec 1ms
 attr unit ms
-par dataflowPlatform.workers[1] failure 20
+par dataflowPlatform.workers[1] failure 2
 par dataflowPlatform.workers[2] typename "\"dataflowplatform.Worker\""
 par dataflowPlatform.workers[2] recovery 650ms
 attr unit ms
 par dataflowPlatform.workers[2] exec 1ms
 attr unit ms
-par dataflowPlatform.workers[2] failure 20
+par dataflowPlatform.workers[2] failure 2
 par dataflowPlatform.workers[3] typename "\"dataflowplatform.Worker\""
 par dataflowPlatform.workers[3] recovery 650ms
 attr unit ms
 par dataflowPlatform.workers[3] exec 1ms
 attr unit ms
-par dataflowPlatform.workers[3] failure 20
+par dataflowPlatform.workers[3] failure 2
 par dataflowPlatform.workers[4] typename "\"dataflowplatform.Worker\""
 par dataflowPlatform.workers[4] recovery 650ms
 attr unit ms
 par dataflowPlatform.workers[4] exec 1ms
 attr unit ms
-par dataflowPlatform.workers[4] failure 20
+par dataflowPlatform.workers[4] failure 2
 par dataflowPlatform.workers[5] typename "\"dataflowplatform.Worker\""
 par dataflowPlatform.workers[5] recovery 650ms
 attr unit ms
 par dataflowPlatform.workers[5] exec 1ms
 attr unit ms
-par dataflowPlatform.workers[5] failure 20
+par dataflowPlatform.workers[5] failure 2
 par dataflowPlatform.workers[6] typename "\"dataflowplatform.Worker\""
 par dataflowPlatform.workers[6] recovery 650ms
 attr unit ms
 par dataflowPlatform.workers[6] exec 1ms
 attr unit ms
-par dataflowPlatform.workers[6] failure 20
+par dataflowPlatform.workers[6] failure 2
 par dataflowPlatform.workers[7] typename "\"dataflowplatform.Worker\""
 par dataflowPlatform.workers[7] recovery 650ms
 attr unit ms
 par dataflowPlatform.workers[7] exec 1ms
 attr unit ms
-par dataflowPlatform.workers[7] failure 20
+par dataflowPlatform.workers[7] failure 2
 par dataflowPlatform.workers[8] typename "\"dataflowplatform.Worker\""
 par dataflowPlatform.workers[8] recovery 650ms
 attr unit ms
 par dataflowPlatform.workers[8] exec 1ms
 attr unit ms
-par dataflowPlatform.workers[8] failure 20
+par dataflowPlatform.workers[8] failure 2
 par dataflowPlatform.workers[9] typename "\"dataflowplatform.Worker\""
 par dataflowPlatform.workers[9] recovery 650ms
 attr unit ms
 par dataflowPlatform.workers[9] exec 1ms
 attr unit ms
-par dataflowPlatform.workers[9] failure 20
+par dataflowPlatform.workers[9] failure 2
 par dataflowPlatform.coordinator typename "\"dataflowplatform.Coordinator\""
 par dataflowPlatform.coordinator workerNumber 10
 par dataflowPlatform.coordinator timeout 300ms

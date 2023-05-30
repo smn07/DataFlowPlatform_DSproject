@@ -295,17 +295,19 @@ bool Coordinator::chunksDone(){
 }
 
 void Coordinator::handlePong(Pong *msg){
+    cout << "pong recieved" << endl;
     int id=msg->getWorkerId();
     if(workersData[id].online){
+        SendPing *sendPingmsg = new SendPing();
+        sendPingmsg->setWorkerId(id);
+        scheduleAfter(par("pingInterval"),sendPingmsg);
+        cout << "ping scheduled" << endl;
         try{
             cancelAndDelete(timeoutId[id]);
         } catch (const cRuntimeError e){
             drop(timeoutId[id]);
             delete timeoutId[id];
         }
-        SendPing *sendPingmsg = new SendPing();
-        sendPingmsg->setWorkerId(id);
-        scheduleAfter(par("pingInterval"),sendPingmsg);
     }
 }
 

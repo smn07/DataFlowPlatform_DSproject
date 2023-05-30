@@ -7,7 +7,8 @@ simulation time: 2140.7275476053
 messageNumber: 146
 
 workerNumber 5
-workerNumber 5
+simulation time: 1906.1878417758
+messageNumber: 176
 
 workerNumber 10
 simulation time: 1952.2749482485
@@ -18,7 +19,8 @@ simulation time: 1412.1621848654
 messageNumber: 300
 
 Number of map operations: 1
-Number of map operations: 1
+simulation time: 1312.14942044
+messageNumber: 121
 
 Number of map operations: 2
 simulation time: 1352.1967716582
@@ -61,7 +63,8 @@ simulation time: 130.1659470523
 messageNumber: 140
 
 failure 2
-failure 2
+simulation time: 552.10002018332
+messageNumber: 160
 
 failure 5
 simulation time: 1152.180902207

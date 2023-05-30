@@ -4,9 +4,6 @@
 using namespace omnetpp;
 using namespace std;
 
-using task=vector<pair<int,int>>;
-using funcDef=vector<pair<string,int>>;
-
 class Worker: public cSimpleModule{
    private:
         int id;

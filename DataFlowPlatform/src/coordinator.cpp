@@ -15,8 +15,6 @@ struct workersData{  //struct per le info per ogni worker
     bool online;
 } workersData_t;
 
-//Togliere il bool in currentTaskQueue
-
 
 class Coordinator: public cSimpleModule{
     private:
@@ -41,11 +39,11 @@ class Coordinator: public cSimpleModule{
         //Vettore con struct che contiene le informazioni su id, stato e operazione in esecuzione di ogni worker
         vector<workersData> workersData;
         //Vettore di coppie <string,int> che rappresentano ogni singola operationze da eseguire
-        vector<task> mapTaskQueue;
-        task reduceTask;
+        vector<pair<string,int>> mapTaskQueue;
+        pair<string,int> reduceTask;
         //Vettore con lista di coppie chiave valore divise in chunk
         vector<vector<pair<int,int>>> globalData;
-        //Stack contenente l'indice del chunk su cui lavorare, l'indice dell'operazione da schedulare
+        //Stack contenente l'indice del chunk su cui lavorare e l'indice dell'operazione da schedulare 
         stack<pair<int,int>> currentTaskQueue;
         //Vettore con le informaizoni su quali chunk sono stati completati
         vector<bool> chunkDone;
@@ -160,9 +158,7 @@ void Coordinator::setup(){
     for(int i=0; i<workerNumber; i++) {
         struct workersData newElement{i,pair<int,int>{-1,0},true};
         workersData.push_back(newElement); //agiungo il nuovo elemento nell'array workersData
-    }
-    /*Setta l'id di ogni worker*/
-    for(int i=0; i<workerNumber; i++){
+        /*Setta l'id di ogni worker*/
         SetId *setmsg = new SetId();
         setmsg->setWorkerId(i);
         send(setmsg, "ports$o",i);
@@ -195,19 +191,19 @@ void Coordinator::assignTask(){
     while(freeWorker>=0 && !currentTaskQueue.empty()){
         //Se vi sono worker liberi e task da schedulare
         pair<int,int> currentTask = currentTaskQueue.top();
-        currentTaskQueue.pop();
         ExecuteTask *msg = new ExecuteTask();
         if (currentTask.second==-1){
             //Se stiamo schedulando una reduce leggiamo da reduce data altrimenti leggiamo da globalData
             msg->setChunk(reduceData[currentTask.first]);
             msg->setOp(reduceTask);
-            workersData[freeWorker].op = pair<int,int>{currentTask.first,-1};//il -1 indica che è una reduce
+            workersData[freeWorker].op = currentTask;
         } else {
             msg->setChunk(globalData[currentTask.first]);
             msg->setOp(mapTaskQueue[currentTask.second]);
             workersData[freeWorker].op = currentTask;
         }
         send(msg,"ports$o",freeWorker);
+        currentTaskQueue.pop();
         messageNumber++;
         freeWorker = getFreeWorker(); 
     }

@@ -11,8 +11,8 @@ class Worker: public cSimpleModule{
    private:
         int id;
         bool failed;
-        double failProb;
-        vector<pair<int,int>> result;
+        double failProb; 
+        vector<pair<int,int>> result;  //da mandare al worker
 
         virtual void initialize() override;
         virtual void handleMessage(cMessage *msg) override;
@@ -34,7 +34,6 @@ void Worker::initialize(){
 
 void Worker::handleSetId(SetId *msg){
     id = msg->getWorkerId();
-    EV << id << endl;
 }
 
 void Worker::handlePing(){
@@ -56,9 +55,9 @@ void Worker::handleExecuteTask(ExecuteTask *msg){
         vector<pair<int,int>> chunk = msg->getChunk();
         pair<string,int> op = msg->getOp();
 
-        executeOperation(chunk,op);
-        ExecutionTime *endmsg = new ExecutionTime();
-        double execTime = par("exec");
+        executeOperation(chunk,op); //la quale segnerà sul result
+        ExecutionTime *endmsg = new ExecutionTime(); //self-message per simulare tempo di esecuzione
+        double execTime = par("exec"); //quanto ci metti per eseguire l'operazione su una sola coppia
         scheduleAfter(execTime*chunk.size(),endmsg);
     } else {
         scheduleAfter(par("recovery"),new Recovery());

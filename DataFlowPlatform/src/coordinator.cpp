@@ -9,9 +9,9 @@ using namespace std;
 
 using task=pair<string,int>;
 
-struct workersData{
+struct workersData{  //struct per le info per ogni worker
     int workerId;
-    pair<int,int> op;
+    pair<int,int> op; //operazione che esegue il worker -> (chunk, indice operazione da applicare al chunk)
     bool online;
 } workersData_t;
 
@@ -45,19 +45,19 @@ class Coordinator: public cSimpleModule{
         task reduceTask;
         //Vettore con lista di coppie chiave valore divise in chunk
         vector<vector<pair<int,int>>> globalData;
-        //Stack contenente l'indice del chunk su cui lavorare, l'indice dell'operazione da schedulare e un bool per sapere se è una map o una reduce
+        //Stack contenente l'indice del chunk su cui lavorare, l'indice dell'operazione da schedulare
         stack<pair<int,int>> currentTaskQueue;
         //Vettore con le informaizoni su quali chunk sono stati completati
         vector<bool> chunkDone;
         //Sorted Input per la reduce
         vector<vector<pair<int,int>>> reduceData;
         //Vettore degli id dei pingTimeout message
-        vector<cMessage*> timeoutId;
+        vector<cMessage*> timeoutId;//tiene traccia per quali nodi c'è un timeout attivo
         //numero di chunk in cui dividere l'input
         int chunkNumber;
         //numero di worker
         int workerNumber;
-
+        //tiene conto di quanti messaggi sono scambiato e quando inizia la simulazione -> per la simulazione
         int messageNumber;
         simtime_t startTime;
 };
@@ -65,7 +65,7 @@ class Coordinator: public cSimpleModule{
 Define_Module(Coordinator);
 
 void Coordinator::initialize(){
-    messageNumber=0;
+    messageNumber=0; //inizializzo dati per la raccolta
     startTime = simTime();
     parseInput();
     setup();
@@ -107,12 +107,12 @@ void Coordinator::parseInput(){
         }
     }
     auto reduce = root["Reduce"].asString();
-    reduceTask = pair<string,int>{reduce,-1};
+    reduceTask = pair<string,int>{reduce,-1};  //perchè identifichiamo la reduce con -1
 
     //fill currentTaskQueue
     for(int i=0;i<chunkNumber;i++){
         currentTaskQueue.push(pair<int,int>{i,0});
-        chunkDone.push_back(false);
+        chunkDone.push_back(false); //tutti i chunk non sono stati completati
     }
 
     // Open the CSV file for reading
@@ -173,17 +173,17 @@ void Coordinator::setup(){
     for(int i=0; i<workerNumber; i++){
         Ping *pingmsg = new Ping();
         pingmsg->setWorkerId(i);
-        send(pingmsg, "ports$o",i);
+        send(pingmsg, "ports$o",i); //abbiamo un array di gate, prendiamo l'i-esimo gate
         messageNumber++;
 
-        PingTimeout *timeoutmsg = new PingTimeout();
+        PingTimeout *timeoutmsg = new PingTimeout();  //self-message per definire il timeout da considerare per quel worker
         timeoutmsg->setWorkerId(i);
         timeoutId[i] = timeoutmsg;
         scheduleAfter(par("timeout"),timeoutmsg);
     }
 
     for(int i=0; i<chunkNumber; i++){
-        reduceData.push_back(vector<pair<int,int>>());
+        reduceData.push_back(vector<pair<int,int>>()); //inizializzazione reduceData
     }
 
 
@@ -229,7 +229,7 @@ bool Coordinator::comparePairs(const pair<int,int>& a, const pair<int,int>& b) {
 void Coordinator::handleTaskCompleted(TaskCompleted *msg){
     messageNumber++;
     int workerId = msg->getWorkerId();
-    if(workersData[workerId].online){
+    if(workersData[workerId].online){ //consideriamo una task completata solo se arriva da un worker online
         //update worker status
         pair<int,int> taskCompleted = workersData[workerId].op;
         workersData[workerId].op = pair<int,int>{-1,0};
@@ -246,14 +246,14 @@ void Coordinator::handleTaskCompleted(TaskCompleted *msg){
         }
         chunkDone[taskCompleted.first] = true;
 
-        //if the next task to schedule is a reduce we sort the input
-        if(taskCompleted.second == mapTaskQueue.size()-1){
+        //if the next task to schede is a reduce we sort the input
+        if(taskCompleted.second == mapTaskQueue.size()-1ul){
             int chunkId = taskCompleted.first;
-            for(pair<int,int> pair : globalData[chunkId]){
+            for(pair<int,int> pair : globalData[chunkId]){ //in questo modo sto ordinando il vettore reduceData in modo tale che siano ordinati rispetto al chunknumber del reduce data
                 reduceData[pair.first % chunkNumber].push_back(pair);
             }    
             for(auto& data : reduceData){
-                sort(data.begin(), data.end());
+                sort(data.begin(), data.end());  //ordinamento dati per chiave all'interno del chunk del reducedata
             }
         }
         
@@ -295,14 +295,12 @@ bool Coordinator::chunksDone(){
 }
 
 void Coordinator::handlePong(Pong *msg){
-    cout << "pong recieved" << endl;
     int id=msg->getWorkerId();
     if(workersData[id].online){
         SendPing *sendPingmsg = new SendPing();
         sendPingmsg->setWorkerId(id);
         scheduleAfter(par("pingInterval"),sendPingmsg);
-        cout << "ping scheduled" << endl;
-        try{
+        try{ //non serve più il timeout dato che il worker ha risposto
             cancelAndDelete(timeoutId[id]);
         } catch (const cRuntimeError e){
             drop(timeoutId[id]);
@@ -325,7 +323,7 @@ void Coordinator::handlePingTimeout(PingTimeout *msg){
     int id = msg->getWorkerId();
     timeoutId[id] = 0;
     workersData[id].online = false;
-    if(workersData[id].op.first != -1){
+    if(workersData[id].op.first != -1){  //se effettivamente il worker stava lavorando su una task bisogna prenderla e inserirla della taskQueue
         pair<int,int> failedTask = pair<int,int>{workersData[id].op.first,workersData[id].op.second};
         workersData[id].op = pair<int,int>{-1,0};
         currentTaskQueue.push(pair<int,int>{failedTask});
@@ -337,18 +335,18 @@ void Coordinator::handleBackOnline(BackOnline *msg){
     messageNumber++;
     int id = msg->getWorkerId();
     workersData[id].online = true;
-    workersData[id].op = pair<int,int>{-1,0};
+    workersData[id].op = pair<int,int>{-1,0}; //il worker non sta facendo nulla
     send(new Ping(), "ports$o",id);
     messageNumber++;
-    PingTimeout *timeoutmsg = new PingTimeout();
+    PingTimeout *timeoutmsg = new PingTimeout(); //self-message
     timeoutmsg->setWorkerId(id);
     timeoutId[id] = timeoutmsg;
     scheduleAfter(par("timeout"),timeoutmsg);
     assignTask();
 }
 
-void Coordinator::handleMessage(cMessage *msg){
-    TaskCompleted* taskmsg = dynamic_cast<TaskCompleted*>(msg);
+void Coordinator::handleMessage(cMessage *msg){ //dynamic_cast -> se il tipo dell'oggetto è giusto (esempio nel primo caso Task_completed allora ritorna l'oggetto, altrimenti ritorna NULL)
+    TaskCompleted* taskmsg = dynamic_cast<TaskCompleted*>(msg); 
     if(taskmsg!=nullptr){
         handleTaskCompleted(taskmsg);
     } else {

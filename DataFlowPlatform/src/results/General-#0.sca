@@ -1,8 +1,8 @@
 version 3
-run General-0-20230626-15:03:37-11179
+run General-0-20230626-15:39:59-12062
 attr configname General
-attr datetime 20230626-15:03:37
-attr datetimef 20230626-150337
+attr datetime 20230626-15:39:59
+attr datetimef 20230626-153959
 attr experiment General
 attr inifile omnetpp.ini
 attr iterationvars ""
@@ -10,7 +10,7 @@ attr iterationvarsd ""
 attr iterationvarsf ""
 attr measurement ""
 attr network dataflowplatform.dataflowPlatform
-attr processid 11179
+attr processid 12062
 attr repetition 0
 attr replication #0
 attr resultdir results
@@ -24,8 +24,8 @@ config **.workers*.recovery 650ms
 config **.workers*.exec 1ms
 config **.workers*.failure 2
 
-scalar dataflowPlatform.coordinator "simulation time" 552.10002018332
-scalar dataflowPlatform.coordinator messageNumber 160
+scalar dataflowPlatform.coordinator "simulation time" 568.08046624071
+scalar dataflowPlatform.coordinator messageNumber 150
 par dataflowPlatform.workers[0].port$o.channel typename "\"dataflowplatform.TCPChannel\""
 par dataflowPlatform.workers[0].port$o.channel disabled false
 attr mutable ""
